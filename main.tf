@@ -1,6 +1,6 @@
 terraform {
   cloud {
-    organization = "ttdeale96"
+    organization = "RocketBank"
 
     workspaces {
       name = "rocket-bank-3-tier-aws"
