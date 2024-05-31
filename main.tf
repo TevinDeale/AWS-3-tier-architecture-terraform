@@ -18,3 +18,10 @@ terraform {
 provider "aws" {
   region = "us-east-1"
 }
+
+module "vpc" {
+  source = "./modules/vpc"
+  vpc_cidr = var.vpc_cidr
+  enable_ipv6 = var.enable_ipv6
+  vpc_tag_name = var.vpc_tag_name
+}
