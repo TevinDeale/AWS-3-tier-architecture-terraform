@@ -54,13 +54,13 @@ subnets = [
   {
     name  = "rocket-bank-use-1c-app",
     cidr  = "192.168.30.128/28",
-    az    = "us-east-1b",
+    az    = "us-east-1c",
     index = 8
   },
   {
     name  = "rocket-bank-use-1c-db",
     cidr  = "192.168.30.144/28",
-    az    = "us-east-1b",
+    az    = "us-east-1c",
     index = 9
   }
 ]
