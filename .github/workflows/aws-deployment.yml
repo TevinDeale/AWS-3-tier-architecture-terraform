@@ -1,5 +1,5 @@
 name: 'Rocket Bank Cloud Infrastructure: AWS Deployment Pipeline'
-run-name: ${{ github.actor }} has triggered the pipeline
+run-name: ${{ github.event_name }} has triggered the pipeline
 
 on:
   pull_request_target:
@@ -38,6 +38,6 @@ jobs:
       - name: Terraform Plan
         run: terraform plan -input=false
 
-      - name: Terrafrom Apply
-        if: github.ref == 'refs/heads/"main"' && github.event_name == 'push'
+      - name: Terraform Apply
+        if: github.ref == 'refs/heads/"main"' && github.event_name == 'pull_reqeust_target'
         run: terraform apply -auto-approve -input=false
