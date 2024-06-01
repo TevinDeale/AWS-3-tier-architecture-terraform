@@ -9,12 +9,12 @@ output "vpc_ipv6_cidr" {
 output "subnets" {
   description = "Subnet Details"
   value = [
-    for subnet in aws_aws_subnet.main_subnet : {
+    for subnet in aws_subnet.main_subnet : {
       name            = subnet.tags["Name"]
       cidr_block      = subnet.cidr_block
       ipv6_cidr_block = subnet.ipv6_cidr_block
       AZ              = subnet.availability_zone
-      ID              = subent.id
+      ID              = subnet.id
     }
   ]
 }
