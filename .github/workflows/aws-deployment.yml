@@ -2,14 +2,17 @@ name: 'Rocket Bank Cloud Infrastructure: AWS Deployment Pipeline'
 run-name: ${{ github.actor }} has triggered the pipeline
 
 on:
-  push:
-    branches: ["main"]
+  pull_request_target:
+    types:
+      - closed
+  
 
 permissions:
   contents: read
 
 jobs:
-  terraform:
+  if_merged:
+    if: github.event.pull_request.merged == true
     name: 'Terraform CLI'
     runs-on: ubuntu-latest
 
