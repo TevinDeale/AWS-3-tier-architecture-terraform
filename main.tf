@@ -20,8 +20,15 @@ provider "aws" {
 }
 
 module "vpc" {
+  #VPC
   source       = "./modules/vpc"
   vpc_cidr     = var.vpc_cidr
   enable_ipv6  = var.enable_ipv6
   vpc_tag_name = var.vpc_tag_name
+  #Subnet
+  subnets = var.subnets
+  subnet_ipv6_cidr = cidrsubnets(
+    module.vpc.vpc_ipv6_cidr,
+    8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8
+  )
 }
