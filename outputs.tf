@@ -8,5 +8,5 @@ output "vpc_ipv6_cidr" {
 
 output "subnets" {
   description = "Subnet Details"
-  value = module.vpc.subnets
+  value       = module.vpc.subnets
 }
