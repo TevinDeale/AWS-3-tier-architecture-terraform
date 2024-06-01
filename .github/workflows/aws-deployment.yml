@@ -1,5 +1,5 @@
 name: 'Rocket Bank Cloud Infrastructure: AWS Deployment Pipeline'
-run-name: ${{ github.actor }} has triggered the pipeline
+run-name: ${{ github.event_name }} has triggered the pipeline
 
 on:
   pull_request_target:
