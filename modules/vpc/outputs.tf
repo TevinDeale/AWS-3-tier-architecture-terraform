@@ -18,3 +18,13 @@ output "subnets" {
     }
   ]
 }
+
+output "igw" {
+  description = "Internet gateway details"
+  value = [
+    for igw in aws_internet_gateway.main_igw : {
+      name = igw.tags["Name"]
+      ID   = igw.id
+    }
+  ]
+}

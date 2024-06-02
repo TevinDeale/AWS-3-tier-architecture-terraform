@@ -65,3 +65,20 @@ subnets = [
   }
 ]
 
+igw_name  = "rocket-bank-use-igw"
+eigw_name = "rocket-bank-use-eigw"
+
+public_rt_name  = "rocket-bank-use-pub-rt"
+private_rt_name = "rocket-bank-use-pvt-rt"
+
+public_subnet_names = ["rocket-bank-use-1a-web", "rocket-bank-use-1b-web", "rocket-bank-use-1c-web"]
+
+private_subnet_names = [
+  "rocket-bank-use-1a-sas",
+  "rocket-bank-use-1a-app",
+  "rocket-bank-use-1a-db",
+  "rocket-bank-use-1b-app",
+  "rocket-bank-use-1b-db",
+  "rocket-bank-use-1c-app",
+  "rocket-bank-use-1c-db"
+]

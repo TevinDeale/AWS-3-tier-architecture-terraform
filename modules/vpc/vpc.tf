@@ -33,13 +33,71 @@ resource "aws_subnet" "main_subnet" {
   }
 }
 
-
-#Route Tables
-
-#Route Table Associations
-
-
 #IGW
+resource "aws_internet_gateway" "main_igw" {
+  vpc_id = aws_vpc.main_vpc.id
 
+  tags = {
+    Name = var.igw_name
+  }
+}
 
 #EOIGW
+resource "aws_egress_only_internet_gateway" "main_eoigw" {
+  vpc_id = aws_vpc.main_vpc
+
+  tags = {
+    Name = var.eigw_name
+  }
+}
+
+#Route Table
+resource "aws_route_table" "public_rt" {
+  vpc_id = aws_vpc.main_vpc
+
+  route {
+    cidr_block = "0.0.0.0/0"
+    gateway_id = aws_internet_gateway.main_igw.id
+  }
+
+  route {
+    ipv6_cidr_block = "::/0"
+    gateway_id      = aws_internet_gateway.main_igw.id
+  }
+
+  tags = {
+    Name = var.public_rt_name
+  }
+}
+
+resource "aws_route_table" "private_rt" {
+  vpc_id = aws_vpc.main_vpc
+
+  route {
+    ipv6_cidr_block        = "::/0"
+    egress_only_gateway_id = aws_egress_only_internet_gateway.main_eoigw.id
+  }
+
+  tags = {
+    Name = var.private_rt_name
+  }
+}
+
+locals {
+  subnet_name_to_id = { for subnet in aws_subnet.main_subnet : subnet.name => subnet.id }
+}
+
+#Route Table Associations
+resource "aws_route_table_association" "pub_rt_assc" {
+  for_each = [for name in var.public_subnet_names : name]
+
+  subnet_id      = lookup(local.subnet_name_to_id, each.value)
+  route_table_id = aws_route_table.public_rt
+}
+
+resource "aws_route_table_association" "pvt_rt_assc" {
+  for_each = [for name in var.private_subnet_names : name]
+
+  subnet_id      = lookup(local.subnet_name_to_id, each.value)
+  route_table_id = aws_route_table.private_rt
+}
