@@ -11,11 +11,6 @@ output "subnets" {
   value       = module.vpc.subnets
 }
 
-output "igw" {
-  description = "IGW Details"
-  value       = module.vpc.igw
-}
-
 output "public_subnets" {
   description = "List of public subnets"
   value       = var.public_subnet_names
