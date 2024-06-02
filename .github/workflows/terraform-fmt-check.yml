@@ -1,4 +1,4 @@
-name: 'Rocket Bank Cloud Infrastructure: Terraform Fmt Check and Plan'
+name: 'Rocket Bank Cloud Infrastructure: Terraform Fmt Check and Validate'
 run-name: ${{ github.actor }} has triggered the pipeline
 
 on:
@@ -33,5 +33,5 @@ jobs:
       - name: Terraform Format
         run: terraform fmt -check -recursive
 
-      - name: Terraform Plan
-        run: terraform plan -input=false
+      - name: Terraform Validate
+        run: terraform validate

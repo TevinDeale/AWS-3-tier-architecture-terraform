@@ -10,3 +10,18 @@ output "subnets" {
   description = "Subnet Details"
   value       = module.vpc.subnets
 }
+
+output "igw" {
+  description = "IGW Details"
+  value       = module.vpc.igw
+}
+
+output "public_subnets" {
+  description = "List of public subnets"
+  value       = var.public_subnet_names
+}
+
+output "private_subnets" {
+  description = "List of private subnets"
+  value       = var.private_subnet_names
+}
