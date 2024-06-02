@@ -44,7 +44,7 @@ resource "aws_internet_gateway" "main_igw" {
 
 #EOIGW
 resource "aws_egress_only_internet_gateway" "main_eoigw" {
-  vpc_id = aws_vpc.main_vpc
+  vpc_id = aws_vpc.main_vpc.id
 
   tags = {
     Name = var.eigw_name
@@ -53,7 +53,7 @@ resource "aws_egress_only_internet_gateway" "main_eoigw" {
 
 #Route Table
 resource "aws_route_table" "public_rt" {
-  vpc_id = aws_vpc.main_vpc
+  vpc_id = aws_vpc.main_vpc.id
 
   route {
     cidr_block = "0.0.0.0/0"
@@ -71,7 +71,7 @@ resource "aws_route_table" "public_rt" {
 }
 
 resource "aws_route_table" "private_rt" {
-  vpc_id = aws_vpc.main_vpc
+  vpc_id = aws_vpc.main_vpc.id
 
   route {
     ipv6_cidr_block        = "::/0"
@@ -84,20 +84,20 @@ resource "aws_route_table" "private_rt" {
 }
 
 locals {
-  subnet_name_to_id = { for subnet in aws_subnet.main_subnet : subnet.name => subnet.id }
+  subnet_name_to_id = { for subnet in aws_subnet.main_subnet : subnet.tags["Name"] => subnet.id }
 }
 
 #Route Table Associations
 resource "aws_route_table_association" "pub_rt_assc" {
-  for_each = [for name in var.public_subnet_names : name]
+  for_each = toset(var.public_subnet_names)
 
   subnet_id      = lookup(local.subnet_name_to_id, each.value)
-  route_table_id = aws_route_table.public_rt
+  route_table_id = aws_route_table.public_rt.id
 }
 
 resource "aws_route_table_association" "pvt_rt_assc" {
-  for_each = [for name in var.private_subnet_names : name]
+  for_each = toset(var.private_subnet_names)
 
   subnet_id      = lookup(local.subnet_name_to_id, each.value)
-  route_table_id = aws_route_table.private_rt
+  route_table_id = aws_route_table.private_rt.id
 }
