@@ -49,7 +49,7 @@ jobs:
           echo "FAIL: Format Check" > fmt-logs.txt
           terraform fmt -check -recursive >> fmt-logs.txt
           cat fmt-logs.txt
-          gh pr comment $PR_URL --body "```\${cat fmt-logs.txt}```"
+          gh pr comment $PR_URL --body "```\$(cat fmt-logs.txt)```"
           exit 2
 
       - name: Terraform Validate
