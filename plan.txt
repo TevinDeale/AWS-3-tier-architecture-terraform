@@ -1,0 +1,55 @@
+Running plan in Terraform Cloud. Output will stream here. Pressing Ctrl-C
+will stop streaming the logs, but will not stop the plan running remotely.
+
+Preparing the remote plan...
+
+To view this run in a browser, visit:
+https://app.terraform.io/app/RocketBank/rocket-bank-3-tier-aws/runs/run-Dv5detGptprGfM2v
+
+Waiting for the plan to start...
+
+Terraform v1.8.4
+on linux_amd64
+Initializing plugins and modules...
+module.vpc.aws_vpc.main_vpc: Refreshing state... [id=vpc-0333e0608589fc986]
+module.vpc.aws_internet_gateway.main_igw: Refreshing state... [id=igw-033e0a80955bd070e]
+module.vpc.aws_egress_only_internet_gateway.main_eoigw: Refreshing state... [id=eigw-0eddcfb92e5658e06]
+module.vpc.aws_subnet.main_subnet["rocket-bank-use-1a-web"]: Refreshing state... [id=subnet-0ac9b633641a16df0]
+module.vpc.aws_subnet.main_subnet["rocket-bank-use-1b-app"]: Refreshing state... [id=subnet-0809ca8873c8bd682]
+module.vpc.aws_subnet.main_subnet["rocket-bank-use-1a-sas"]: Refreshing state... [id=subnet-0fd399134ae4b8685]
+module.vpc.aws_subnet.main_subnet["rocket-bank-use-1b-web"]: Refreshing state... [id=subnet-02bf98500aff7ca7a]
+module.vpc.aws_subnet.main_subnet["rocket-bank-use-1c-web"]: Refreshing state... [id=subnet-005248b367d2a5d41]
+module.vpc.aws_subnet.main_subnet["rocket-bank-use-1b-db"]: Refreshing state... [id=subnet-0b07576ccb9d233c3]
+module.vpc.aws_subnet.main_subnet["rocket-bank-use-1a-app"]: Refreshing state... [id=subnet-089e319d12a2e1d93]
+module.vpc.aws_subnet.main_subnet["rocket-bank-use-1a-db"]: Refreshing state... [id=subnet-0fadbaf33f9aaceec]
+module.vpc.aws_subnet.main_subnet["rocket-bank-use-1c-app"]: Refreshing state... [id=subnet-0a603f144f07c99c5]
+module.vpc.aws_subnet.main_subnet["rocket-bank-use-1c-db"]: Refreshing state... [id=subnet-03ad69d925eb8a364]
+module.vpc.aws_route_table.private_rt: Refreshing state... [id=rtb-05fc2c941a1c7bc2b]
+module.vpc.aws_route_table.public_rt: Refreshing state... [id=rtb-07b81a41e164aecef]
+module.vpc.aws_route_table_association.pvt_rt_assc["rocket-bank-use-1a-sas"]: Refreshing state... [id=rtbassoc-07965b233e9f25007]
+module.vpc.aws_route_table_association.pvt_rt_assc["rocket-bank-use-1b-app"]: Refreshing state... [id=rtbassoc-0705be39bd0e1018e]
+module.vpc.aws_route_table_association.pvt_rt_assc["rocket-bank-use-1a-app"]: Refreshing state... [id=rtbassoc-09d0a78c574eed238]
+module.vpc.aws_route_table_association.pvt_rt_assc["rocket-bank-use-1c-app"]: Refreshing state... [id=rtbassoc-04af452270e0418c9]
+module.vpc.aws_route_table_association.pvt_rt_assc["rocket-bank-use-1a-db"]: Refreshing state... [id=rtbassoc-073cabd82d7aa1240]
+module.vpc.aws_route_table_association.pvt_rt_assc["rocket-bank-use-1b-db"]: Refreshing state... [id=rtbassoc-0ff17e8dc5a3d7fb6]
+module.vpc.aws_route_table_association.pvt_rt_assc["rocket-bank-use-1c-db"]: Refreshing state... [id=rtbassoc-001f8446cbfaab4e7]
+module.vpc.aws_route_table_association.pub_rt_assc["rocket-bank-use-1b-web"]: Refreshing state... [id=rtbassoc-0c28500f27f8a4ef6]
+module.vpc.aws_route_table_association.pub_rt_assc["rocket-bank-use-1a-web"]: Refreshing state... [id=rtbassoc-0b3be8e7f4f73b5bf]
+module.vpc.aws_route_table_association.pub_rt_assc["rocket-bank-use-1c-web"]: Refreshing state... [id=rtbassoc-01734791055adc1df]
+
+No changes. Your infrastructure matches the configuration.
+
+Terraform has compared your real infrastructure against your configuration
+and found no differences, so no changes are needed.
+
+------------------------------------------------------------------------
+
+Cost Estimation:
+
+Resources: 0 of 1 estimated
+           $0.0/mo +$0.0
+
+─────────────────────────────────────────────────────────────────────────────
+
+Note: You didn't use the -out option to save this plan, so Terraform can't
+guarantee to take exactly these actions if you run "terraform apply" now.
