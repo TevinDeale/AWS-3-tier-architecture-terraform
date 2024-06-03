@@ -47,7 +47,7 @@ jobs:
         if: failure()
         run: |
           echo "FAIL: Format Check" > fmt-logs.txt
-          terraform fmt -check -recursive | tee -a fmt-logs.txt
+          terraform fmt -check -recursive 3>&1 | tee -a fmt-logs.txt
           echo "I made it here"
           gh pr comment $PR_URL --body "\`\`\`$(cat fmt-logs.txt)\`\`\`"
           exit 2
