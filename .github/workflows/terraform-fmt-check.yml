@@ -56,9 +56,9 @@ jobs:
         run: |
           echo "FAIL: Validate Check" > validate.txt
           terraform validate -no-color 2>&1 | tee -a validate.txt
-          if grep -c "Error" validate.txt; then return 1; else return 0; fi
+          if grep "Error" validate.txt; then return 1; else return 0; fi
 
-      - name: Successful Format Check
+      - name: Successful Validate Check
         if: ${{ success() }}
         run: |
           gh pr comment $PR_URL --body "Successful Terraform Validate Check"
@@ -72,7 +72,7 @@ jobs:
         run: |
           echo "FAIL: Plan Check" > plan.txt
           terraform plan -no-color -input=false 2>&1 | tee -a plan.txt
-          if grep -c "Error" validate.txt; then return 2; else return 0; fi
+          if grep "Error" validate.txt; then return 2; else return 0; fi
       
       - name: Successful Plan
         if: ${{ success() }}
