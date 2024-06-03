@@ -40,12 +40,12 @@ jobs:
           terraform fmt -check -recursive
 
       - name: Successful Format Check
-        if: ${{ success() }}
+        if: success()
         run: |
           gh pr comment $PR_URL --body "Successful Terraform Format Check"
 
       - name: PR Comment fmt-logs on Failure
-        if: ${{ failure() }}
+        if: failure()
         run: |
           echo "FAIL: Format Check" > fmt-logs.txt
           terraform fmt -check -recursive >> fmt-logs.txt || return 0
@@ -59,12 +59,12 @@ jobs:
           if grep "Error" validate.txt; then return 1; else return 0; fi
 
       - name: Successful Validate Check
-        if: ${{ success() }}
+        if: success()
         run: |
           gh pr comment $PR_URL --body "Successful Terraform Validate Check"
 
       - name: PR Comment fmt-logs on Failure
-        if: ${{ failure() }}
+        if: failure()
         run: |
           gh pr comment $PR_URL --body "```${cat validate.txt}```" && return 2
 
@@ -75,12 +75,12 @@ jobs:
           if grep "Error" plan.txt; then return 2; else return 0; fi
       
       - name: Successful Plan
-        if: ${{ success() }}
+        if: success()
         run: |
           gh pr comment $PR_URL --body "Successful Terraform Plan"
 
       - name: PR comment plan logs on failure
-        if: ${{ failure() }}
+        if: failure()
         run: |
           awk '/Error:/,/╵/ {print}' plan.txt >> exlogs.txt
           gh pr comment $PR_URL --body "```${cat exlogs.txt}```" && return 2
