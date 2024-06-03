@@ -99,5 +99,5 @@ resource "aws_route_table_association" "pvt_rt_assc" {
   for_each = toset(var.private_subnet_names)
 
   subnet_id      = lookup(local.subnet_name_to_id, each.value)
-  route_table_id = aws_route_table.private_rt.id
+  route_table_id =     aws_route_table.private_rt.id
 }
