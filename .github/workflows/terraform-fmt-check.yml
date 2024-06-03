@@ -46,10 +46,11 @@ jobs:
       - name: PR Comment fmt-logs on Failure
         if: failure()
         run: |
-          gh pr comment $PR_URL --body "Please run \`\`\terraform fmt -recursive\`\`\`"
+          gh pr comment $PR_URL --body "Please run \`\`\`terraform fmt -recursive\`\`\`"
           exit 2
 
       - name: Terraform Validate
+        id: terraform_validate
         continue-on-error: true
         run: |
           echo "FAIL: Validate Check" > validate.txt
@@ -62,12 +63,13 @@ jobs:
           gh pr comment $PR_URL --body "Successful Terraform Validate Check"
 
       - name: PR Comment validate logs on Failure
-        if: failure()
+        if: failure() && steps.terraform_validate.outcome == 'failure'
         run: |
           cat validate.txt
           gh pr comment $PR_URL --body "```${cat validate.txt}```" && return 2
 
       - name: Terraform Plan
+        id: terraform_plan
         run: |
           echo "FAIL: Plan Check" > plan.txt
           terraform plan -no-color -input=false 2>&1 | tee -a plan.txt
@@ -79,7 +81,8 @@ jobs:
           gh pr comment $PR_URL --body "Successful Terraform Plan"
 
       - name: PR comment plan logs on failure
-        if: failure()
+        if: failure() && steps.terraform_plan.outcome == 'failure'
         run: |
           awk '/Error:/,/╵/ {print}' plan.txt >> exlogs.txt
-          gh pr comment $PR_URL --body "```${cat exlogs.txt}```" && return 2
+          gh pr comment $PR_URL --body "\`\`\`$(cat exlogs.txt)\`\`\`"
+          exit 2
