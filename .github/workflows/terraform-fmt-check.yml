@@ -8,11 +8,15 @@ on:
 
 permissions:
   contents: read
+  pull-requests: write
 
 jobs:
   terraform:
     name: 'Terraform CLI'
     runs-on: ubuntu-latest
+    env:
+      GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      PR_URL: ${{ github.event.pull_request.html_url }}
 
     defaults:
       run:
@@ -31,10 +35,52 @@ jobs:
         run: terraform init
 
       - name: Terraform Format
-        run: terraform fmt -check -recursive
+        continue-on-error: true
+        run: |
+          terraform fmt -check -recursive
+
+      - name: Successful Format Check
+        if: ${{ success() }}
+        run: |
+          gh pr comment $PR_URL --body "Successful Terraform Format Check"
+
+      - name: PR Comment fmt-logs on Failure
+        if: ${{ failure() }}
+        run: |
+          echo "FAIL: Format Check" > fmt-logs.txt
+          terraform fmt -check -recursive >> fmt-logs.txt || return 0
+          gh pr comment $PR_URL --body "```${cat fmt-logs.txt}```" && return 2
 
       - name: Terraform Validate
-        run: terraform validate
+        continue-on-error: true
+        run: |
+          echo "FAIL: Validate Check" > validate.txt
+          terraform validate -no-color 2>&1 | tee -a validate.txt
+          if grep -c "Error" validate.txt; then return 1; else return 0; fi
+
+      - name: Successful Format Check
+        if: ${{ success() }}
+        run: |
+          gh pr comment $PR_URL --body "Successful Terraform Validate Check"
+
+      - name: PR Comment fmt-logs on Failure
+        if: ${{ failure() }}
+        run: |
+          gh pr comment $PR_URL --body "```${cat validate.txt}```" && return 2
 
       - name: Terraform Plan
-        run: terraform plan -input=false
+        run: |
+          echo "FAIL: Plan Check" > plan.txt
+          terraform plan -no-color -input=false 2>&1 | tee -a plan.txt
+          if grep -c "Error" validate.txt; then return 2; else return 0; fi
+      
+      - name: Successful Plan
+        if: ${{ success() }}
+        run: |
+          gh pr comment $PR_URL --body "Successful Terraform Plan"
+
+      - name: PR comment plan logs on failure
+        if: ${{ failure() }}
+        run: |
+          awk '/Error:/,/╵/ {print}' plan.txt >> exlogs.txt
+          gh pr comment $PR_URL --body "```${cat exlogs.txt}```" && return 2
