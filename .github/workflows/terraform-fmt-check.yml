@@ -66,6 +66,7 @@ jobs:
       - name: PR Comment fmt-logs on Failure
         if: failure()
         run: |
+          cat fmt-logs.txt
           gh pr comment $PR_URL --body "```${cat fmt-logs.txt}```" && return 2
 
       - name: Terraform Plan
