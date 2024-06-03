@@ -65,8 +65,7 @@ jobs:
       - name: PR Comment validate logs on Failure
         if: failure() && steps.terraform_validate.outcome == 'failure'
         run: |
-          cat validate.txt
-          gh pr comment $PR_URL --body "```${cat validate.txt}```" 
+          gh pr comment $PR_URL --body "\`\`\`$(cat validate.txt)\`\`\`" 
           exit 2
 
       - name: Terraform Plan
