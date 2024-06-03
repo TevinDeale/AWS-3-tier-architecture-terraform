@@ -46,7 +46,7 @@ jobs:
       - name: PR Comment fmt-logs on Failure
         if: failure()
         run: |
-          gh pr comment $PR_URL --body "Please run "/`/`/`terraform fmt -recursive/`/`/`"
+          gh pr comment $PR_URL --body "Please run \`\`\terraform fmt -recursive\`\`\`"
           exit 2
 
       - name: Terraform Validate
