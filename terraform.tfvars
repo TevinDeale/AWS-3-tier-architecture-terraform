@@ -101,3 +101,29 @@ security_groups = [
     description = "Database security group"
   },
 ]
+
+sg_egress_rule = [
+  #SAS-SG RULES
+  {
+    name         = "all_traffic_out_ipv4",
+    sg_id        = "sas-sg",
+    ip_proto     = "-1",
+    source_ipv4  = "0.0.0.0/0",
+    source_ipv6  = null,
+    source_sg_id = null,
+    from_port    = null,
+    to_port      = null,
+    description  = "All IPv4 traffic out allowed"
+  },
+  {
+    name         = "all_traffic_out_ipv6",
+    sg_id        = "sas-sg",
+    ip_proto     = "-1",
+    source_ipv4  = null,
+    source_ipv6  = "::/0",
+    source_sg_id = null,
+    from_port    = null,
+    to_port      = null,
+    description  = "All IPv6 traffic out allowed"
+  }
+]

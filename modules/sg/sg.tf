@@ -31,7 +31,7 @@ locals {
 
   sg_name_to_id = { for sg in aws_security_group.main_sg : sg.name => sg.id }
 }
-resource "aws_vpc_security_group_ingress_rule" "sg_egress_rule" {
+resource "aws_vpc_security_group_egress_rule" "sg_egress_rule" {
   for_each = local.egress_rules
 
   security_group_id = lookup(local.sg_name_to_id, each.value.sg_id)
