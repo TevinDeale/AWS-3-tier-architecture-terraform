@@ -57,28 +57,5 @@ module "sg" {
   vpc_id          = module.vpc.vpc_id
 
   #SG EGRESS RULES
-  sg_egress_rule = [
-    {
-      name         = "all_traffic_out_ipv4",
-      sg_id        = "sas-sg",
-      ip_proto     = "-1"
-      source_ipv4  = "0.0.0.0/0"
-      description  = "All IPv4 traffic out allowed"
-      from_port    = null
-      to_port      = null
-      source_ipv6  = null
-      source_sg_id = null
-    },
-    {
-      name         = "all_traffic_out_ipv6",
-      sg_id        = "sas-sg",
-      ip_proto     = "-1"
-      source_ipv4  = null
-      description  = "All IPv6 traffic out allowed"
-      from_port    = null
-      to_port      = null
-      source_ipv6  = "::/0"
-      source_sg_id = null
-    }
-  ]
+  sg_egress_rule = var.sg_egress_rule
 }
