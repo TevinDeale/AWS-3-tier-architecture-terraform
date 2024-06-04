@@ -58,3 +58,12 @@ variable "private_subnet_names" {
   description = "List of subnet names that belong to the private route table"
   type        = list(string)
 }
+
+variable "security_groups" {
+  description = "List of security groups"
+
+  type = list(object({
+    name        = string
+    description = string
+  }))
+}

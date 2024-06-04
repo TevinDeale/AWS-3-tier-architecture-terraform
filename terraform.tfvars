@@ -82,3 +82,22 @@ private_subnet_names = [
   "rocket-bank-use-1c-app",
   "rocket-bank-use-1c-db"
 ]
+
+security_groups = [
+  {
+    name        = "sas-sg",
+    description = "SAS security group"
+  },
+  {
+    name        = "web-sg",
+    description = "Web security group"
+  },
+  {
+    name        = "app-sg",
+    description = "App security group"
+  },
+  {
+    name        = "db-sg",
+    description = "Database security group"
+  },
+]
