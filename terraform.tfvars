@@ -125,5 +125,17 @@ sg_egress_rule = [
     from_port    = null,
     to_port      = null,
     description  = "All IPv6 traffic out allowed"
+  },
+  #WEB-SG RULES
+  {
+    name         = null,
+    sg_id        = null,
+    ip_proto     = null,
+    source_ipv4  = null,
+    source_ipv6  = null,
+    source_sg_id = null,
+    from_port    = null,
+    to_port      = null,
+    description  = null
   }
 ]

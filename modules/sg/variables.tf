@@ -28,3 +28,17 @@ variable "sg_egress_rule" {
 
   default = null
 }
+
+/* SG RULE TEMPLATE. REPLACE NULL VALUES
+  {
+    name         = null,
+    sg_id        = null,
+    ip_proto     = null,
+    source_ipv4  = null,
+    source_ipv6  = null,
+    source_sg_id = null,
+    from_port    = null,
+    to_port      = null,
+    description  = null
+  }
+  */
