@@ -128,7 +128,7 @@ sg_egress_rule = [
   },
   #WEB-SG RULES
   {
-    name         = "http_app",
+    name         = "web_to_app_http",
     sg_id        = "web-sg",
     ip_proto     = "tcp",
     source_ipv4  = null,
@@ -140,12 +140,12 @@ sg_egress_rule = [
   },
   #APP-SG RULES
   {
-    name         = "app_db",
+    name         = "app_to_db_pg",
     sg_id        = "app-sg",
     ip_proto     = "tcp",
     source_ipv4  = null,
     source_ipv6  = null,
-    source_sg_id = "sb-sas",
+    source_sg_id = "db-sas",
     from_port    = 5432,
     to_port      = 5432,
     description  = "app servers out to postgresql db"
@@ -171,93 +171,88 @@ sg_egress_rule = [
     from_port    = 443,
     to_port      = 443,
     description  = "All HTTPS IPv6 traffic out allowed"
-  },
+  }
+]
+
+sg_ingress_rule = [
+  #WEB-RULES
   {
-    name         = null,
-    sg_id        = null,
-    ip_proto     = null,
-    source_ipv4  = null,
+    name         = "https_traffic_in_ipv4",
+    sg_id        = "web-sg",
+    ip_proto     = "tcp",
+    source_ipv4  = "0.0.0.0/0",
     source_ipv6  = null,
     source_sg_id = null,
-    from_port    = null,
-    to_port      = null,
-    description  = null
+    from_port    = 443,
+    to_port      = 443,
+    description  = "HTTPS IPv4 traffic in allowed"
   },
   {
-    name         = null,
-    sg_id        = null,
-    ip_proto     = null,
+    name         = "https_traffic_in_ipv6",
+    sg_id        = "web-sg",
+    ip_proto     = "tcp",
     source_ipv4  = null,
-    source_ipv6  = null,
+    source_ipv6  = "::/0",
     source_sg_id = null,
-    from_port    = null,
-    to_port      = null,
-    description  = null
+    from_port    = 443,
+    to_port      = 443,
+    description  = "HTTPS IPv6 traffic in allowed"
   },
   {
-    name         = null,
-    sg_id        = null,
-    ip_proto     = null,
+    name         = "ssh_from_sas",
+    sg_id        = "web-sg",
+    ip_proto     = "tcp",
     source_ipv4  = null,
     source_ipv6  = null,
-    source_sg_id = null,
-    from_port    = null,
-    to_port      = null,
-    description  = null
+    source_sg_id = "sas-sg",
+    from_port    = 22,
+    to_port      = 22,
+    description  = "Allow SSH from SAS SG"
+  },
+  #APP-RULES
+  {
+    name         = "ssh_from_sas",
+    sg_id        = "app-sg",
+    ip_proto     = "tcp",
+    source_ipv4  = null,
+    source_ipv6  = null,
+    source_sg_id = "sas-sg",
+    from_port    = 22,
+    to_port      = 22,
+    description  = "Allow SSH from SAS SG"
   },
   {
-    name         = null,
-    sg_id        = null,
-    ip_proto     = null,
+    name         = "http_from_web",
+    sg_id        = "app-sg",
+    ip_proto     = "tcp",
     source_ipv4  = null,
     source_ipv6  = null,
-    source_sg_id = null,
-    from_port    = null,
-    to_port      = null,
-    description  = null
+    source_sg_id = "web-sg",
+    from_port    = 80,
+    to_port      = 80,
+    description  = "Allow http traffic from web server sg"
+  },
+  #DB-RULES
+  {
+    name         = "ssh_from_sas",
+    sg_id        = "db-sg",
+    ip_proto     = "tcp",
+    source_ipv4  = null,
+    source_ipv6  = null,
+    source_sg_id = "sas-sg",
+    from_port    = 22,
+    to_port      = 22,
+    description  = "Allow SSH from SAS SG"
   },
   {
-    name         = null,
-    sg_id        = null,
-    ip_proto     = null,
+    name         = "postgres_from_app",
+    sg_id        = "db-sg",
+    ip_proto     = "tcp",
     source_ipv4  = null,
     source_ipv6  = null,
-    source_sg_id = null,
-    from_port    = null,
-    to_port      = null,
-    description  = null
-  },
-  {
-    name         = null,
-    sg_id        = null,
-    ip_proto     = null,
-    source_ipv4  = null,
-    source_ipv6  = null,
-    source_sg_id = null,
-    from_port    = null,
-    to_port      = null,
-    description  = null
-  },
-  {
-    name         = null,
-    sg_id        = null,
-    ip_proto     = null,
-    source_ipv4  = null,
-    source_ipv6  = null,
-    source_sg_id = null,
-    from_port    = null,
-    to_port      = null,
-    description  = null
-  },
-  {
-    name         = null,
-    sg_id        = null,
-    ip_proto     = null,
-    source_ipv4  = null,
-    source_ipv6  = null,
-    source_sg_id = null,
-    from_port    = null,
-    to_port      = null,
-    description  = null
+    source_sg_id = "app-sg",
+    from_port    = 5432,
+    to_port      = 5432,
+    description  = "Allow db connection from web server sg"
   }
 ]
