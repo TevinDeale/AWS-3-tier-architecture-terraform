@@ -128,6 +128,128 @@ sg_egress_rule = [
   },
   #WEB-SG RULES
   {
+    name         = "http_app",
+    sg_id        = "web-sg",
+    ip_proto     = "tcp",
+    source_ipv4  = null,
+    source_ipv6  = null,
+    source_sg_id = "app-sg",
+    from_port    = 80,
+    to_port      = 80,
+    description  = "HTTP Traffic to servers in the APP SG"
+  },
+  #APP-SG RULES
+  {
+    name         = "app_db",
+    sg_id        = "app-sg",
+    ip_proto     = "tcp",
+    source_ipv4  = null,
+    source_ipv6  = null,
+    source_sg_id = "sb-sas",
+    from_port    = 5432,
+    to_port      = 5432,
+    description  = "app servers out to postgresql db"
+  },
+  {
+    name         = "https_traffic_out_ipv4",
+    sg_id        = "app-sg",
+    ip_proto     = "tcp",
+    source_ipv4  = "0.0.0.0/0",
+    source_ipv6  = null,
+    source_sg_id = null,
+    from_port    = 443,
+    to_port      = 443,
+    description  = "All HTTPS IPv4 traffic out allowed"
+  },
+  {
+    name         = "https_traffic_out_ipv6",
+    sg_id        = "app-sg",
+    ip_proto     = "tcp",
+    source_ipv4  = null,
+    source_ipv6  = "::/0",
+    source_sg_id = null,
+    from_port    = 443,
+    to_port      = 443,
+    description  = "All HTTPS IPv6 traffic out allowed"
+  },
+  {
+    name         = null,
+    sg_id        = null,
+    ip_proto     = null,
+    source_ipv4  = null,
+    source_ipv6  = null,
+    source_sg_id = null,
+    from_port    = null,
+    to_port      = null,
+    description  = null
+  },
+  {
+    name         = null,
+    sg_id        = null,
+    ip_proto     = null,
+    source_ipv4  = null,
+    source_ipv6  = null,
+    source_sg_id = null,
+    from_port    = null,
+    to_port      = null,
+    description  = null
+  },
+  {
+    name         = null,
+    sg_id        = null,
+    ip_proto     = null,
+    source_ipv4  = null,
+    source_ipv6  = null,
+    source_sg_id = null,
+    from_port    = null,
+    to_port      = null,
+    description  = null
+  },
+  {
+    name         = null,
+    sg_id        = null,
+    ip_proto     = null,
+    source_ipv4  = null,
+    source_ipv6  = null,
+    source_sg_id = null,
+    from_port    = null,
+    to_port      = null,
+    description  = null
+  },
+  {
+    name         = null,
+    sg_id        = null,
+    ip_proto     = null,
+    source_ipv4  = null,
+    source_ipv6  = null,
+    source_sg_id = null,
+    from_port    = null,
+    to_port      = null,
+    description  = null
+  },
+  {
+    name         = null,
+    sg_id        = null,
+    ip_proto     = null,
+    source_ipv4  = null,
+    source_ipv6  = null,
+    source_sg_id = null,
+    from_port    = null,
+    to_port      = null,
+    description  = null
+  },
+  {
+    name         = null,
+    sg_id        = null,
+    ip_proto     = null,
+    source_ipv4  = null,
+    source_ipv6  = null,
+    source_sg_id = null,
+    from_port    = null,
+    to_port      = null,
+    description  = null
+  },
+  {
     name         = null,
     sg_id        = null,
     ip_proto     = null,
