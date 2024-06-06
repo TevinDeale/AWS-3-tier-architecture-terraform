@@ -60,3 +60,13 @@ module "sg" {
   sg_ingress_rule = var.sg_ingress_rule
   sg_egress_rule  = var.sg_egress_rule
 }
+
+module "instance" {
+  source = "./modules/ec2"
+
+  #Security Groups
+  security_groups = module.sg
+
+  #rb-sas-use-1a
+  instances = var.instances
+}
