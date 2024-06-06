@@ -145,7 +145,7 @@ sg_egress_rule = [
     ip_proto     = "tcp",
     source_ipv4  = null,
     source_ipv6  = null,
-    source_sg_id = "db-sas",
+    source_sg_id = "db-sg",
     from_port    = 5432,
     to_port      = 5432,
     description  = "app servers out to postgresql db"
@@ -199,7 +199,7 @@ sg_ingress_rule = [
     description  = "HTTPS IPv6 traffic in allowed"
   },
   {
-    name         = "ssh_from_sas",
+    name         = "ssh_from_sas_to_web",
     sg_id        = "web-sg",
     ip_proto     = "tcp",
     source_ipv4  = null,
@@ -211,7 +211,7 @@ sg_ingress_rule = [
   },
   #APP-RULES
   {
-    name         = "ssh_from_sas",
+    name         = "ssh_from_sas_to_app",
     sg_id        = "app-sg",
     ip_proto     = "tcp",
     source_ipv4  = null,
@@ -234,7 +234,7 @@ sg_ingress_rule = [
   },
   #DB-RULES
   {
-    name         = "ssh_from_sas",
+    name         = "ssh_from_sas_to_db",
     sg_id        = "db-sg",
     ip_proto     = "tcp",
     source_ipv4  = null,

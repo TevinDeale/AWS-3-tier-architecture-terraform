@@ -57,5 +57,6 @@ module "sg" {
   vpc_id          = module.vpc.vpc_id
 
   #SG EGRESS RULES
-  sg_egress_rule = var.sg_egress_rule
+  sg_ingress_rule = var.sg_ingress_rule
+  sg_egress_rule  = var.sg_egress_rule
 }
