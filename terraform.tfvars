@@ -125,5 +125,134 @@ sg_egress_rule = [
     from_port    = null,
     to_port      = null,
     description  = "All IPv6 traffic out allowed"
+  },
+  #WEB-SG RULES
+  {
+    name         = "web_to_app_http",
+    sg_id        = "web-sg",
+    ip_proto     = "tcp",
+    source_ipv4  = null,
+    source_ipv6  = null,
+    source_sg_id = "app-sg",
+    from_port    = 80,
+    to_port      = 80,
+    description  = "HTTP Traffic to servers in the APP SG"
+  },
+  #APP-SG RULES
+  {
+    name         = "app_to_db_pg",
+    sg_id        = "app-sg",
+    ip_proto     = "tcp",
+    source_ipv4  = null,
+    source_ipv6  = null,
+    source_sg_id = "db-sg",
+    from_port    = 5432,
+    to_port      = 5432,
+    description  = "app servers out to postgresql db"
+  },
+  {
+    name         = "https_traffic_out_ipv4",
+    sg_id        = "app-sg",
+    ip_proto     = "tcp",
+    source_ipv4  = "0.0.0.0/0",
+    source_ipv6  = null,
+    source_sg_id = null,
+    from_port    = 443,
+    to_port      = 443,
+    description  = "All HTTPS IPv4 traffic out allowed"
+  },
+  {
+    name         = "https_traffic_out_ipv6",
+    sg_id        = "app-sg",
+    ip_proto     = "tcp",
+    source_ipv4  = null,
+    source_ipv6  = "::/0",
+    source_sg_id = null,
+    from_port    = 443,
+    to_port      = 443,
+    description  = "All HTTPS IPv6 traffic out allowed"
+  }
+]
+
+sg_ingress_rule = [
+  #WEB-RULES
+  {
+    name         = "https_traffic_in_ipv4",
+    sg_id        = "web-sg",
+    ip_proto     = "tcp",
+    source_ipv4  = "0.0.0.0/0",
+    source_ipv6  = null,
+    source_sg_id = null,
+    from_port    = 443,
+    to_port      = 443,
+    description  = "HTTPS IPv4 traffic in allowed"
+  },
+  {
+    name         = "https_traffic_in_ipv6",
+    sg_id        = "web-sg",
+    ip_proto     = "tcp",
+    source_ipv4  = null,
+    source_ipv6  = "::/0",
+    source_sg_id = null,
+    from_port    = 443,
+    to_port      = 443,
+    description  = "HTTPS IPv6 traffic in allowed"
+  },
+  {
+    name         = "ssh_from_sas_to_web",
+    sg_id        = "web-sg",
+    ip_proto     = "tcp",
+    source_ipv4  = null,
+    source_ipv6  = null,
+    source_sg_id = "sas-sg",
+    from_port    = 22,
+    to_port      = 22,
+    description  = "Allow SSH from SAS SG"
+  },
+  #APP-RULES
+  {
+    name         = "ssh_from_sas_to_app",
+    sg_id        = "app-sg",
+    ip_proto     = "tcp",
+    source_ipv4  = null,
+    source_ipv6  = null,
+    source_sg_id = "sas-sg",
+    from_port    = 22,
+    to_port      = 22,
+    description  = "Allow SSH from SAS SG"
+  },
+  {
+    name         = "http_from_web",
+    sg_id        = "app-sg",
+    ip_proto     = "tcp",
+    source_ipv4  = null,
+    source_ipv6  = null,
+    source_sg_id = "web-sg",
+    from_port    = 80,
+    to_port      = 80,
+    description  = "Allow http traffic from web server sg"
+  },
+  #DB-RULES
+  {
+    name         = "ssh_from_sas_to_db",
+    sg_id        = "db-sg",
+    ip_proto     = "tcp",
+    source_ipv4  = null,
+    source_ipv6  = null,
+    source_sg_id = "sas-sg",
+    from_port    = 22,
+    to_port      = 22,
+    description  = "Allow SSH from SAS SG"
+  },
+  {
+    name         = "postgres_from_app",
+    sg_id        = "db-sg",
+    ip_proto     = "tcp",
+    source_ipv4  = null,
+    source_ipv6  = null,
+    source_sg_id = "app-sg",
+    from_port    = 5432,
+    to_port      = 5432,
+    description  = "Allow db connection from web server sg"
   }
 ]

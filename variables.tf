@@ -84,3 +84,20 @@ variable "sg_egress_rule" {
 
   default = null
 }
+
+variable "sg_ingress_rule" {
+  description = "SECURITY GROUP INGRESS RULES"
+  type = list(object({
+    name         = string
+    sg_id        = string
+    ip_proto     = string
+    from_port    = number
+    to_port      = number
+    source_ipv4  = string
+    source_ipv6  = string
+    source_sg_id = string
+    description  = string
+  }))
+
+  default = null
+}
