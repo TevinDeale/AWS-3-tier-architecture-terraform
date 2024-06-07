@@ -70,6 +70,7 @@ module "instance" {
   source = "./modules/ec2"
 
   instances = [
+    #SAS-INSTANCE
     {
       ami            = "ami-00beae93a2d981137"
       type           = "t2.micro"
@@ -81,6 +82,117 @@ module "instance" {
       key            = "rb"
       volume_size    = 20
       user_data      = templatefile("${path.module}/userdata/tailscale.sh", { tailscale_key = var.tailscale_key })
-    }
+    },
+    #web Instances
+    {
+      ami            = "ami-00beae93a2d981137"
+      type           = "t2.micro"
+      name           = "rb-web-use-1a"
+      subnet_id      = lookup(local.subnet_name_to_id, "rocket-bank-use-1a-web")
+      public_ipv4    = false
+      ipv6_count     = 1
+      security_group = [lookup(local.sg_name_to_id, "web-sg")]
+      key            = "rb"
+      volume_size    = 8
+      user_data      = templatefile("${path.module}/userdata/hostname.sh", { name = "rb-web-use-1a" })
+    },
+    {
+      ami            = "ami-00beae93a2d981137"
+      type           = "t2.micro"
+      name           = "rb-web-use-1b"
+      subnet_id      = lookup(local.subnet_name_to_id, "rocket-bank-use-1b-web")
+      public_ipv4    = false
+      ipv6_count     = 1
+      security_group = [lookup(local.sg_name_to_id, "web-sg")]
+      key            = "rb"
+      volume_size    = 8
+      user_data      = templatefile("${path.module}/userdata/hostname.sh", { name = "rb-web-use-1b" })
+    },
+    {
+      ami            = "ami-00beae93a2d981137"
+      type           = "t2.micro"
+      name           = "rb-web-use-1c"
+      subnet_id      = lookup(local.subnet_name_to_id, "rocket-bank-use-1c-web")
+      public_ipv4    = false
+      ipv6_count     = 1
+      security_group = [lookup(local.sg_name_to_id, "web-sg")]
+      key            = "rb"
+      volume_size    = 8
+      user_data      = templatefile("${path.module}/userdata/hostname.sh", { name = "rb-web-use-1c" })
+    },
+    #APP-INSTANCES
+    {
+      ami            = "ami-00beae93a2d981137"
+      type           = "t2.micro"
+      name           = "rb-app-use-1a"
+      subnet_id      = lookup(local.subnet_name_to_id, "rocket-bank-use-1a-app")
+      public_ipv4    = false
+      ipv6_count     = 1
+      security_group = [lookup(local.sg_name_to_id, "app-sg")]
+      key            = "rb"
+      volume_size    = 8
+      user_data      = templatefile("${path.module}/userdata/hostname.sh", { name = "rb-app-use-1a" })
+    },
+    {
+      ami            = "ami-00beae93a2d981137"
+      type           = "t2.micro"
+      name           = "rb-app-use-1b"
+      subnet_id      = lookup(local.subnet_name_to_id, "rocket-bank-use-1b-app")
+      public_ipv4    = false
+      ipv6_count     = 1
+      security_group = [lookup(local.sg_name_to_id, "app-sg")]
+      key            = "rb"
+      volume_size    = 8
+      user_data      = templatefile("${path.module}/userdata/hostname.sh", { name = "rb-app-use-1b" })
+    },
+    {
+      ami            = "ami-00beae93a2d981137"
+      type           = "t2.micro"
+      name           = "rb-app-use-1c"
+      subnet_id      = lookup(local.subnet_name_to_id, "rocket-bank-use-1c-app")
+      public_ipv4    = false
+      ipv6_count     = 1
+      security_group = [lookup(local.sg_name_to_id, "app-sg")]
+      key            = "rb"
+      volume_size    = 8
+      user_data      = templatefile("${path.module}/userdata/hostname.sh", { name = "rb-app-use-1c" })
+    },
+    #DB-INSTANCES
+    {
+      ami            = "ami-00beae93a2d981137"
+      type           = "t2.micro"
+      name           = "rb-db-use-1a"
+      subnet_id      = lookup(local.subnet_name_to_id, "rocket-bank-use-1a-db")
+      public_ipv4    = false
+      ipv6_count     = 1
+      security_group = [lookup(local.sg_name_to_id, "db-sg")]
+      key            = "rb"
+      volume_size    = 8
+      user_data      = templatefile("${path.module}/userdata/hostname.sh", { name = "rb-db-use-1a" })
+    },
+    {
+      ami            = "ami-00beae93a2d981137"
+      type           = "t2.micro"
+      name           = "rb-db-use-1b"
+      subnet_id      = lookup(local.subnet_name_to_id, "rocket-bank-use-1b-db")
+      public_ipv4    = false
+      ipv6_count     = 1
+      security_group = [lookup(local.sg_name_to_id, "db-sg")]
+      key            = "rb"
+      volume_size    = 8
+      user_data      = templatefile("${path.module}/userdata/hostname.sh", { name = "rb-db-use-1b" })
+    },
+    {
+      ami            = "ami-00beae93a2d981137"
+      type           = "t2.micro"
+      name           = "rb-db-use-1c"
+      subnet_id      = lookup(local.subnet_name_to_id, "rocket-bank-use-1c-db")
+      public_ipv4    = false
+      ipv6_count     = 1
+      security_group = [lookup(local.sg_name_to_id, "db-sg")]
+      key            = "rb"
+      volume_size    = 8
+      user_data      = templatefile("${path.module}/userdata/hostname.sh", { name = "rb-db-use-1c" })
+    },
   ]
 }
