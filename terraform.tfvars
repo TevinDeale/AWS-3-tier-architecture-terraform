@@ -209,6 +209,17 @@ sg_ingress_rule = [
     to_port      = 22,
     description  = "Allow SSH from SAS SG"
   },
+  {
+    name         = "icmp_from_sas_to_web",
+    sg_id        = "web-sg",
+    ip_proto     = "icmp",
+    source_ipv4  = null,
+    source_ipv6  = null,
+    source_sg_id = "sas-sg",
+    from_port    = 0,
+    to_port      = 8,
+    description  = "Allow ICMP from SAS SG"
+  },
   #APP-RULES
   {
     name         = "ssh_from_sas_to_app",
@@ -232,6 +243,17 @@ sg_ingress_rule = [
     to_port      = 80,
     description  = "Allow http traffic from web server sg"
   },
+  {
+    name         = "icmp_from_sas_to_app",
+    sg_id        = "app-sg",
+    ip_proto     = "icmp",
+    source_ipv4  = null,
+    source_ipv6  = null,
+    source_sg_id = "sas-sg",
+    from_port    = 0,
+    to_port      = 8,
+    description  = "Allow ICMP from SAS SG"
+  },
   #DB-RULES
   {
     name         = "ssh_from_sas_to_db",
@@ -254,6 +276,17 @@ sg_ingress_rule = [
     from_port    = 5432,
     to_port      = 5432,
     description  = "Allow db connection from web server sg"
+  },
+  {
+    name         = "icmp_from_sas_to_db",
+    sg_id        = "db-sg",
+    ip_proto     = "icmp",
+    source_ipv4  = null,
+    source_ipv6  = null,
+    source_sg_id = "sas-sg",
+    from_port    = 0,
+    to_port      = 8,
+    description  = "Allow ICMP from SAS SG"
   }
 ]
 
