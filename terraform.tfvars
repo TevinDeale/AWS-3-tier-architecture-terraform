@@ -138,6 +138,28 @@ sg_egress_rule = [
     to_port      = 80,
     description  = "HTTP Traffic to servers in the APP SG"
   },
+  {
+    name         = "https_traffic_out_ipv4_web",
+    sg_id        = "web-sg",
+    ip_proto     = "tcp",
+    source_ipv4  = "0.0.0.0/0",
+    source_ipv6  = null,
+    source_sg_id = null,
+    from_port    = 443,
+    to_port      = 443,
+    description  = "All HTTPS IPv4 traffic out allowed"
+  },
+  {
+    name         = "https_traffic_out_ipv6_web",
+    sg_id        = "web-sg",
+    ip_proto     = "tcp",
+    source_ipv4  = null,
+    source_ipv6  = "::/0",
+    source_sg_id = null,
+    from_port    = 443,
+    to_port      = 443,
+    description  = "All HTTPS IPv6 traffic out allowed"
+  },
   #APP-SG RULES
   {
     name         = "app_to_db_pg",
@@ -164,6 +186,29 @@ sg_egress_rule = [
   {
     name         = "https_traffic_out_ipv6",
     sg_id        = "app-sg",
+    ip_proto     = "tcp",
+    source_ipv4  = null,
+    source_ipv6  = "::/0",
+    source_sg_id = null,
+    from_port    = 443,
+    to_port      = 443,
+    description  = "All HTTPS IPv6 traffic out allowed"
+  },
+  #DB-SG Rules
+  {
+    name         = "https_traffic_out_ipv4_db",
+    sg_id        = "db-sg",
+    ip_proto     = "tcp",
+    source_ipv4  = "0.0.0.0/0",
+    source_ipv6  = null,
+    source_sg_id = null,
+    from_port    = 443,
+    to_port      = 443,
+    description  = "All HTTPS IPv4 traffic out allowed"
+  },
+  {
+    name         = "https_traffic_out_ipv6_db",
+    sg_id        = "db-sg",
     ip_proto     = "tcp",
     source_ipv4  = null,
     source_ipv6  = "::/0",
