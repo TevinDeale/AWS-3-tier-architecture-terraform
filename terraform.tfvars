@@ -261,8 +261,8 @@ sg_ingress_rule = [
     source_ipv4  = null,
     source_ipv6  = null,
     source_sg_id = "sas-sg",
-    from_port    = 0,
-    to_port      = 8,
+    from_port    = 8,
+    to_port      = 0,
     description  = "Allow ICMP from SAS SG"
   },
   #APP-RULES
@@ -295,8 +295,8 @@ sg_ingress_rule = [
     source_ipv4  = null,
     source_ipv6  = null,
     source_sg_id = "sas-sg",
-    from_port    = 0,
-    to_port      = 8,
+    from_port    = 8,
+    to_port      = 0,
     description  = "Allow ICMP from SAS SG"
   },
   #DB-RULES
@@ -329,8 +329,8 @@ sg_ingress_rule = [
     source_ipv4  = null,
     source_ipv6  = null,
     source_sg_id = "sas-sg",
-    from_port    = 0,
-    to_port      = 8,
+    from_port    = 8,
+    to_port      = 0,
     description  = "Allow ICMP from SAS SG"
   }
 ]
