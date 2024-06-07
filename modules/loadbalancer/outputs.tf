@@ -3,7 +3,7 @@ output "elb" {
   value = [
     for lb in aws_lb.elb : {
       name = lb.name
-      id = lb.id
+      arn = lb.arn
       dns = lb.dns_name
     }
   ]
