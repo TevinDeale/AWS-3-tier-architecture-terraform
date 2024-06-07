@@ -257,24 +257,5 @@ sg_ingress_rule = [
   }
 ]
 
-instances = [ 
-  {
-    ami = "ami-00beae93a2d981137"
-    type = ""
-    name = ""
-    subnet_id = ""
-    public_ipv4 = true
-    ipv6_count = 1
-    security_group = [ "value" ]
-    key = "value"
-    user_data = <<-EOF
-      #! bin/bash
-      hostnamectl set-hostname rb-sas-use-1a
-      yum update -y
-      curl -fsSL https://tailscale.com/install.sh | sh
-      tailscale up --auth-key tailscale_key --ssh
-      EOF
-  }
- ]
 
 
