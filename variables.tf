@@ -101,3 +101,13 @@ variable "sg_ingress_rule" {
 
   default = null
 }
+
+variable "tailscale_key" {
+  description = "API key for Tailscale"
+  type        = string
+  sensitive   = true
+}
+
+
+
+

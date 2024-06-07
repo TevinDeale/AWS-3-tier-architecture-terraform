@@ -60,3 +60,27 @@ module "sg" {
   sg_ingress_rule = var.sg_ingress_rule
   sg_egress_rule  = var.sg_egress_rule
 }
+
+locals {
+  sg_name_to_id     = { for sg in module.sg.security_groups : sg.name => sg.id }
+  subnet_name_to_id = { for subnet in module.vpc.subnets : subnet.name => subnet.ID }
+}
+
+module "instance" {
+  source = "./modules/ec2"
+
+  instances = [
+    {
+      ami            = "ami-00beae93a2d981137"
+      type           = "t2.micro"
+      name           = "rb-sas-use-1a"
+      subnet_id      = lookup(local.subnet_name_to_id, "rocket-bank-use-1a-sas")
+      public_ipv4    = false
+      ipv6_count     = 1
+      security_group = [lookup(local.sg_name_to_id, "sas-sg")]
+      key            = "rb"
+      volume_size    = 20
+      user_data      = templatefile("${path.module}/userdata/tailscale.sh", { tailscale_key = var.tailscale_key })
+    }
+  ]
+}
