@@ -77,8 +77,6 @@ resource "aws_lb_listener" "lb_listener" {
     cert_arn        = listener.cert_arn
     action_type     = listener.action_type
     tg_arn          = listener.tg_arn
-    enable_sticky   = listener.enable_sticky
-    sticky_duration = listener.sticky_duration
   } }
 
   load_balancer_arn = each.value.lb_arn
@@ -89,14 +87,6 @@ resource "aws_lb_listener" "lb_listener" {
 
   default_action {
     type = each.value.action_type
-    forward {
-      target_group {
-        arn = each.value.tg_arn
-      }
-      stickiness {
-        enabled  = each.value.enable_sticky
-        duration = each.value.sticky_duration
-      }
-    }
+    target_group_arn = each.value.tg_arn
   }
 }

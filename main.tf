@@ -382,8 +382,6 @@ module "elb" {
       cert_arn        = "arn:aws:acm:us-east-1:905418375402:certificate/cea12e1b-5d67-4498-a2e4-3545ffe94163"
       action_type     = "forward"
       tg_arn          = lookup({ for tg in module.elb.tgs : tg.name => tg.arn }, "rb-web-tg")
-      enable_sticky   = true
-      sticky_duration = 3600
     },
     {
       lb_arn          = lookup({ for lb in module.elb.elb : lb.name => lb.arn }, "rb-web-proxy-alb")
@@ -393,8 +391,6 @@ module "elb" {
       cert_arn        = "arn:aws:acm:us-east-1:905418375402:certificate/cea12e1b-5d67-4498-a2e4-3545ffe94163"
       action_type     = "forward"
       tg_arn          = lookup({ for tg in module.elb.tgs : tg.name => tg.arn }, "rb-proxy-tg")
-      enable_sticky   = true
-      sticky_duration = 3600
     },
     {
       lb_arn          = lookup({ for lb in module.elb.elb : lb.name => lb.arn }, "rb-api-nlb")
@@ -404,8 +400,6 @@ module "elb" {
       cert_arn        = null
       action_type     = "forward"
       tg_arn          = lookup({ for tg in module.elb.tgs : tg.name => tg.arn }, "rb-api-tg")
-      enable_sticky   = false
-      sticky_duration = 3600
     },
     {
       lb_arn          = lookup({ for lb in module.elb.elb : lb.name => lb.arn }, "rb-db-nlb")
@@ -415,8 +409,6 @@ module "elb" {
       cert_arn        = null
       action_type     = "forward"
       tg_arn          = lookup({ for tg in module.elb.tgs : tg.name => tg.arn }, "rb-db-tg")
-      enable_sticky   = false
-      sticky_duration = 3600
     }
   ]
 }

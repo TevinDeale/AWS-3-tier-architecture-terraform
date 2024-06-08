@@ -49,7 +49,5 @@ variable "lb_listeners" {
     cert_arn        = string
     action_type     = string
     tg_arn          = string
-    enable_sticky   = bool
-    sticky_duration = number
   }))
 }
