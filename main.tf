@@ -204,7 +204,7 @@ module "elb" {
     {
       name                  = "rb-web-tg",
       port                  = 443,
-      protocol              = "https"
+      protocol              = "HTTPS"
       vpc_id                = module.vpc.vpc_id
       enable_health_check   = true
       health_check_interval = 300
@@ -217,7 +217,7 @@ module "elb" {
     {
       name                  = "rb-proxy-tg",
       port                  = 3000,
-      protocol              = "http"
+      protocol              = "HTTP"
       vpc_id                = module.vpc.vpc_id
       enable_health_check   = true
       health_check_interval = 300
@@ -230,7 +230,7 @@ module "elb" {
     {
       name                  = "rb-api-tg",
       port                  = 8080,
-      protocol              = "http"
+      protocol              = "HTTP"
       vpc_id                = module.vpc.vpc_id
       enable_health_check   = true
       health_check_interval = 300
@@ -243,7 +243,7 @@ module "elb" {
     {
       name                  = "rb-db-tg",
       port                  = 5432,
-      protocol              = "tcp"
+      protocol              = "TCP"
       vpc_id                = module.vpc.vpc_id
       enable_health_check   = null
       health_check_interval = null
