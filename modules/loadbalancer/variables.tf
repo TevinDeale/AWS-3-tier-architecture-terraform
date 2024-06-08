@@ -42,14 +42,12 @@ variable "targets" {
 variable "lb_listeners" {
   description = "LB LISTENERS"
   type = list(object({
-    lb_arn          = string
-    port            = number
-    protocol        = string
-    ssl_policy      = string
-    cert_arn        = string
-    action_type     = string
-    tg_arn          = string
-    enable_sticky   = bool
-    sticky_duration = number
+    lb_arn      = string
+    port        = number
+    protocol    = string
+    ssl_policy  = string
+    cert_arn    = string
+    action_type = string
+    tg_arn      = string
   }))
 }
