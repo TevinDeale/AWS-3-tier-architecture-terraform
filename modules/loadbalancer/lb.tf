@@ -55,3 +55,38 @@ resource "aws_lb_target_group" "tg" {
     cookie_duration = each.value.cookie_duration
   }
 }
+
+resource "aws_lb_target_group_attachment" "targets" {
+  for_each = { for target in var.targets : target.id => {
+    tg_arn = target.tg_arn
+    target_id = target.target_id
+    port = target.target_port
+  }}
+  target_group_arn = each.value.tg_arn
+  target_id = each.value.target_id
+  port = each.value.port
+}
+
+resource "aws_lb_listener" "lb_listener" {
+  for_each = { for listener in var.lb_listeners : listener.lb_arn => {
+    lb_arn = listener.lb_arn
+    port = listener.port
+    protocol = listener.protocol
+    ssl_policy = listener.ssl_policy
+    cert_arn = listener.cert_arn
+    action_type = listener.action_type
+    tg_arn = listener.tg_arn
+  }}
+
+  load_balancer_arn = each.value.lb_arn
+  port = each.value.port
+  path = 
+  protocol = each.value.protocol
+  ssl_policy = each.value.ssl_policy
+  certificate_arn = each.value.cert_arn
+
+  default_action {
+    type = each.value.action_type
+    target_group_arn = each.value.tg_arn
+  }
+}

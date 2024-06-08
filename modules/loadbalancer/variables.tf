@@ -29,3 +29,25 @@ variable "tg" {
     sticky_type = string
   }))
 }
+
+variable "targets" {
+  description = "TARGET"
+  type = list(object({
+    tg_arn = string
+    target_id = string
+    target_port = number
+  }))
+}
+
+variable "lb_listeners" {
+  description = "LB LISTENERS"
+  type = list(object({
+    lb_arn = string
+    port = number
+    protocol = string
+    ssl_policy = string
+    cert_arn = string
+    action_type = string
+    tg_arn = set(string)
+  }))
+}
