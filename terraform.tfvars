@@ -244,6 +244,17 @@ sg_ingress_rule = [
     description  = "HTTPS IPv6 traffic in allowed"
   },
   {
+    name         = "https_traffic_in_on_3000",
+    sg_id        = "web-sg",
+    ip_proto     = "tcp",
+    source_ipv4  = null,
+    source_ipv6  = "0.0.0.0/0",
+    source_sg_id = null,
+    from_port    = 3000,
+    to_port      = 3000,
+    description  = "HTTPS traffic in allowed on port 3000 to reach proxy"
+  },
+  {
     name         = "ssh_from_sas_to_web",
     sg_id        = "web-sg",
     ip_proto     = "tcp",
