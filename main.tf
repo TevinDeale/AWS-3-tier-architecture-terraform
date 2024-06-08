@@ -230,7 +230,7 @@ module "elb" {
     {
       name                  = "rb-api-tg",
       port                  = 8080,
-      protocol              = "HTTP"
+      protocol              = "TCP"
       vpc_id                = module.vpc.vpc_id
       enable_health_check   = true
       health_check_interval = 300
@@ -405,7 +405,7 @@ module "elb" {
       action_type     = "forward"
       tg_arn          = lookup({ for tg in module.elb.tgs : tg.name => tg.arn }, "rb-api-tg")
       enable_sticky   = false
-      sticky_duration = null
+      sticky_duration = 3600
     },
     {
       lb_arn          = lookup({ for lb in module.elb.elb : lb.name => lb.arn }, "rb-db-nlb")
@@ -416,7 +416,7 @@ module "elb" {
       action_type     = "forward"
       tg_arn          = lookup({ for tg in module.elb.tgs : tg.name => tg.arn }, "rb-db-tg")
       enable_sticky   = false
-      sticky_duration = null
+      sticky_duration = 3600
     }
   ]
 }
