@@ -375,40 +375,40 @@ module "elb" {
 
   lb_listeners = [
     {
-      lb_arn          = lookup({ for lb in module.elb.elb : lb.name => lb.arn }, "rb-web-proxy-alb")
-      port            = 443
-      protocol        = "HTTPS"
-      ssl_policy      = "ELBSecurityPolicy-TLS13-1-2-2021-06"
-      cert_arn        = "arn:aws:acm:us-east-1:905418375402:certificate/cea12e1b-5d67-4498-a2e4-3545ffe94163"
-      action_type     = "forward"
-      tg_arn          = lookup({ for tg in module.elb.tgs : tg.name => tg.arn }, "rb-web-tg")
+      lb_arn      = lookup({ for lb in module.elb.elb : lb.name => lb.arn }, "rb-web-proxy-alb")
+      port        = 443
+      protocol    = "HTTPS"
+      ssl_policy  = "ELBSecurityPolicy-TLS13-1-2-2021-06"
+      cert_arn    = "arn:aws:acm:us-east-1:905418375402:certificate/cea12e1b-5d67-4498-a2e4-3545ffe94163"
+      action_type = "forward"
+      tg_arn      = lookup({ for tg in module.elb.tgs : tg.name => tg.arn }, "rb-web-tg")
     },
     {
-      lb_arn          = lookup({ for lb in module.elb.elb : lb.name => lb.arn }, "rb-web-proxy-alb")
-      port            = 3000
-      protocol        = "HTTPS"
-      ssl_policy      = "ELBSecurityPolicy-TLS13-1-2-2021-06"
-      cert_arn        = "arn:aws:acm:us-east-1:905418375402:certificate/cea12e1b-5d67-4498-a2e4-3545ffe94163"
-      action_type     = "forward"
-      tg_arn          = lookup({ for tg in module.elb.tgs : tg.name => tg.arn }, "rb-proxy-tg")
+      lb_arn      = lookup({ for lb in module.elb.elb : lb.name => lb.arn }, "rb-web-proxy-alb")
+      port        = 3000
+      protocol    = "HTTPS"
+      ssl_policy  = "ELBSecurityPolicy-TLS13-1-2-2021-06"
+      cert_arn    = "arn:aws:acm:us-east-1:905418375402:certificate/cea12e1b-5d67-4498-a2e4-3545ffe94163"
+      action_type = "forward"
+      tg_arn      = lookup({ for tg in module.elb.tgs : tg.name => tg.arn }, "rb-proxy-tg")
     },
     {
-      lb_arn          = lookup({ for lb in module.elb.elb : lb.name => lb.arn }, "rb-api-nlb")
-      port            = 80
-      protocol        = "TCP"
-      ssl_policy      = null
-      cert_arn        = null
-      action_type     = "forward"
-      tg_arn          = lookup({ for tg in module.elb.tgs : tg.name => tg.arn }, "rb-api-tg")
+      lb_arn      = lookup({ for lb in module.elb.elb : lb.name => lb.arn }, "rb-api-nlb")
+      port        = 80
+      protocol    = "TCP"
+      ssl_policy  = null
+      cert_arn    = null
+      action_type = "forward"
+      tg_arn      = lookup({ for tg in module.elb.tgs : tg.name => tg.arn }, "rb-api-tg")
     },
     {
-      lb_arn          = lookup({ for lb in module.elb.elb : lb.name => lb.arn }, "rb-db-nlb")
-      port            = 5432
-      protocol        = "TCP"
-      ssl_policy      = null
-      cert_arn        = null
-      action_type     = "forward"
-      tg_arn          = lookup({ for tg in module.elb.tgs : tg.name => tg.arn }, "rb-db-tg")
+      lb_arn      = lookup({ for lb in module.elb.elb : lb.name => lb.arn }, "rb-db-nlb")
+      port        = 5432
+      protocol    = "TCP"
+      ssl_policy  = null
+      cert_arn    = null
+      action_type = "forward"
+      tg_arn      = lookup({ for tg in module.elb.tgs : tg.name => tg.arn }, "rb-db-tg")
     }
   ]
 }

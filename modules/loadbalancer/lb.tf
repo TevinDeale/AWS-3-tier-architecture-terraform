@@ -70,13 +70,13 @@ resource "aws_lb_target_group_attachment" "targets" {
 resource "aws_lb_listener" "lb_listener" {
   depends_on = [aws_lb.elb, aws_lb_target_group.tg]
   for_each = { for listener in var.lb_listeners : listener.port => {
-    lb_arn          = listener.lb_arn
-    port            = listener.port
-    protocol        = listener.protocol
-    ssl_policy      = listener.ssl_policy
-    cert_arn        = listener.cert_arn
-    action_type     = listener.action_type
-    tg_arn          = listener.tg_arn
+    lb_arn      = listener.lb_arn
+    port        = listener.port
+    protocol    = listener.protocol
+    ssl_policy  = listener.ssl_policy
+    cert_arn    = listener.cert_arn
+    action_type = listener.action_type
+    tg_arn      = listener.tg_arn
   } }
 
   load_balancer_arn = each.value.lb_arn
@@ -86,7 +86,7 @@ resource "aws_lb_listener" "lb_listener" {
   certificate_arn   = each.value.cert_arn
 
   default_action {
-    type = each.value.action_type
+    type             = each.value.action_type
     target_group_arn = each.value.tg_arn
   }
 }
