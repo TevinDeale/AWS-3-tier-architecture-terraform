@@ -3,8 +3,8 @@ output "elb" {
   value = [
     for lb in aws_lb.elb : {
       name = lb.name
-      arn = lb.arn
-      dns = lb.dns_name
+      arn  = lb.arn
+      dns  = lb.dns_name
     }
   ]
 }
@@ -14,7 +14,7 @@ output "tgs" {
   value = [
     for tg in aws_lb_target_group.tg : {
       name = tg.name
-      arn = tg.arn
+      arn  = tg.arn
     }
   ]
 }

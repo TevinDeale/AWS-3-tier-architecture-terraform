@@ -196,3 +196,227 @@ module "instance" {
     },
   ]
 }
+
+module "elb" {
+  source = "./modules/loadbalancer"
+
+  tg = [
+    {
+      name                  = "rb-web-tg",
+      port                  = 443,
+      protocol              = "https"
+      vpc_id                = module.vpc.vpc_id
+      enable_health_check   = true
+      health_check_interval = 300
+      health_check_path     = "/"
+      enable_sticky         = true
+      cookie_name           = "connect.sid"
+      cookie_duration       = 3600
+      sticky_type           = "app_cookie"
+    },
+    {
+      name                  = "rb-proxy-tg",
+      port                  = 3000,
+      protocol              = "http"
+      vpc_id                = module.vpc.vpc_id
+      enable_health_check   = true
+      health_check_interval = 300
+      health_check_path     = "/welcome"
+      enable_sticky         = true
+      cookie_name           = "connect.sid"
+      cookie_duration       = 3600
+      sticky_type           = "app_cookie"
+    },
+    {
+      name                  = "rb-api-tg",
+      port                  = 8080,
+      protocol              = "http"
+      vpc_id                = module.vpc.vpc_id
+      enable_health_check   = true
+      health_check_interval = 300
+      health_check_path     = "/welcome"
+      enable_sticky         = false
+      cookie_name           = null
+      cookie_duration       = null
+      sticky_type           = "source_ip"
+    },
+    {
+      name                  = "rb-db-tg",
+      port                  = 5432,
+      protocol              = "tcp"
+      vpc_id                = module.vpc.vpc_id
+      enable_health_check   = null
+      health_check_interval = null
+      health_check_path     = null
+      enable_sticky         = false
+      cookie_name           = null
+      cookie_duration       = null
+      sticky_type           = "source_ip"
+    }
+  ]
+
+  targets = [
+    {
+      tg_arn      = lookup({ for tg in module.elb.tgs : tg.name => tg.arn }, "rb-web-tg")
+      target_id   = lookup({ for instance in module.instance.fmt_instances : instance.name => instance.id }, "rb-web-use-1a")
+      target_port = 4173
+    },
+    {
+      tg_arn      = lookup({ for tg in module.elb.tgs : tg.name => tg.arn }, "rb-web-tg")
+      target_id   = lookup({ for instance in module.instance.fmt_instances : instance.name => instance.id }, "rb-web-use-1b")
+      target_port = 4173
+    },
+    {
+      tg_arn      = lookup({ for tg in module.elb.tgs : tg.name => tg.arn }, "rb-web-tg")
+      target_id   = lookup({ for instance in module.instance.fmt_instances : instance.name => instance.id }, "rb-web-use-1c")
+      target_port = 4173
+    },
+    {
+      tg_arn      = lookup({ for tg in module.elb.tgs : tg.name => tg.arn }, "rb-proxy-tg")
+      target_id   = lookup({ for instance in module.instance.fmt_instances : instance.name => instance.id }, "rb-app-use-1a")
+      target_port = 3000
+    },
+    {
+      tg_arn      = lookup({ for tg in module.elb.tgs : tg.name => tg.arn }, "rb-proxy-tg")
+      target_id   = lookup({ for instance in module.instance.fmt_instances : instance.name => instance.id }, "rb-app-use-1b")
+      target_port = 3000
+    },
+    {
+      tg_arn      = lookup({ for tg in module.elb.tgs : tg.name => tg.arn }, "rb-proxy-tg")
+      target_id   = lookup({ for instance in module.instance.fmt_instances : instance.name => instance.id }, "rb-app-use-1c")
+      target_port = 3000
+    },
+    {
+      tg_arn      = lookup({ for tg in module.elb.tgs : tg.name => tg.arn }, "rb-api-tg")
+      target_id   = lookup({ for instance in module.instance.fmt_instances : instance.name => instance.id }, "rb-app-use-1a")
+      target_port = 8080
+    },
+    {
+      tg_arn      = lookup({ for tg in module.elb.tgs : tg.name => tg.arn }, "rb-api-tg")
+      target_id   = lookup({ for instance in module.instance.fmt_instances : instance.name => instance.id }, "rb-app-use-1b")
+      target_port = 8080
+    },
+    {
+      tg_arn      = lookup({ for tg in module.elb.tgs : tg.name => tg.arn }, "rb-api-tg")
+      target_id   = lookup({ for instance in module.instance.fmt_instances : instance.name => instance.id }, "rb-app-use-1c")
+      target_port = 8080
+    },
+    {
+      tg_arn      = lookup({ for tg in module.elb.tgs : tg.name => tg.arn }, "rb-db-tg")
+      target_id   = lookup({ for instance in module.instance.fmt_instances : instance.name => instance.id }, "rb-db-use-1a")
+      target_port = 5432
+    },
+    {
+      tg_arn      = lookup({ for tg in module.elb.tgs : tg.name => tg.arn }, "rb-db-tg")
+      target_id   = lookup({ for instance in module.instance.fmt_instances : instance.name => instance.id }, "rb-db-use-1b")
+      target_port = 5432
+    },
+    {
+      tg_arn      = lookup({ for tg in module.elb.tgs : tg.name => tg.arn }, "rb-db-tg")
+      target_id   = lookup({ for instance in module.instance.fmt_instances : instance.name => instance.id }, "rb-db-use-1c")
+      target_port = 5432
+    },
+  ]
+
+  elb = [
+    {
+      name     = "rb-web-proxy-alb"
+      internal = false
+      type     = "application"
+      security_groups = [
+        lookup(local.sg_name_to_id, "web-sg"),
+        lookup(local.sg_name_to_id, "app-sg"),
+      ]
+      subnets = [
+        lookup(local.subnet_name_to_id, "rocket-bank-use-1a-web"),
+        lookup(local.subnet_name_to_id, "rocket-bank-use-1b-web"),
+        lookup(local.subnet_name_to_id, "rocket-bank-use-1c-web"),
+      ]
+      phh                   = true
+      xff_client_port       = true
+      xff_header_processing = "preserve"
+      cross_zone            = true
+    },
+    {
+      name     = "rb-api-nlb"
+      internal = true
+      type     = "network"
+      security_groups = [
+        lookup(local.sg_name_to_id, "app-sg")
+      ]
+      subnets = [
+        lookup(local.subnet_name_to_id, "rocket-bank-use-1a-app"),
+        lookup(local.subnet_name_to_id, "rocket-bank-use-1b-app"),
+        lookup(local.subnet_name_to_id, "rocket-bank-use-1c-app"),
+      ]
+      phh                   = true
+      xff_client_port       = true
+      xff_header_processing = "preserve"
+      cross_zone            = true
+    },
+    {
+      name     = "rb-db-nlb"
+      internal = true
+      type     = "network"
+      security_groups = [
+        lookup(local.sg_name_to_id, "app-sg")
+      ]
+      subnets = [
+        lookup(local.subnet_name_to_id, "rocket-bank-use-1a-db"),
+        lookup(local.subnet_name_to_id, "rocket-bank-use-1b-db"),
+        lookup(local.subnet_name_to_id, "rocket-bank-use-1c-db"),
+      ]
+      phh                   = null
+      xff_client_port       = null
+      xff_header_processing = null
+      cross_zone            = true
+    },
+  ]
+
+  lb_listeners = [
+    {
+      lb_arn          = lookup({ for lb in module.elb.elb : lb.name => lb.arn }, "rb-web-proxy-alb")
+      port            = 443
+      protocol        = "https"
+      ssl_policy      = "ELBSecurityPolicy-TLS13-1-2-2021-06"
+      cert_arn        = "arn:aws:acm:us-east-1:905418375402:certificate/cea12e1b-5d67-4498-a2e4-3545ffe94163"
+      action_type     = "forward"
+      tg_arn          = lookup({ for tg in module.elb.tgs : tg.name => tg.arn }, "rb-web-tg")
+      enable_sticky   = true
+      sticky_duration = 3600
+    },
+    {
+      lb_arn          = lookup({ for lb in module.elb.elb : lb.name => lb.arn }, "rb-web-proxy-alb")
+      port            = 3000
+      protocol        = "https"
+      ssl_policy      = "ELBSecurityPolicy-TLS13-1-2-2021-06"
+      cert_arn        = "arn:aws:acm:us-east-1:905418375402:certificate/cea12e1b-5d67-4498-a2e4-3545ffe94163"
+      action_type     = "forward"
+      tg_arn          = lookup({ for tg in module.elb.tgs : tg.name => tg.arn }, "rb-proxy-tg")
+      enable_sticky   = true
+      sticky_duration = 3600
+    },
+    {
+      lb_arn          = lookup({ for lb in module.elb.elb : lb.name => lb.arn }, "rb-api-nlb")
+      port            = 80
+      protocol        = "tcp"
+      ssl_policy      = null
+      cert_arn        = null
+      action_type     = "forward"
+      tg_arn          = lookup({ for tg in module.elb.tgs : tg.name => tg.arn }, "rb-api-tg")
+      enable_sticky   = false
+      sticky_duration = null
+    },
+    {
+      lb_arn          = lookup({ for lb in module.elb.elb : lb.name => lb.arn }, "rb-db-nlb")
+      port            = 5432
+      protocol        = "tcp"
+      ssl_policy      = null
+      cert_arn        = null
+      action_type     = "forward"
+      tg_arn          = lookup({ for tg in module.elb.tgs : tg.name => tg.arn }, "rb-db-tg")
+      enable_sticky   = false
+      sticky_duration = null
+    }
+  ]
+}
