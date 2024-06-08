@@ -230,7 +230,7 @@ module "elb" {
     {
       name                  = "rb-api-tg",
       port                  = 8080,
-      protocol              = "HTTP"
+      protocol              = "TCP"
       vpc_id                = module.vpc.vpc_id
       enable_health_check   = true
       health_check_interval = 300
