@@ -108,5 +108,22 @@ variable "tailscale_key" {
   sensitive   = true
 }
 
+variable "cloudflare_api_key" {
+  description = "API key for cloudflare"
+  type        = string
+  sensitive   = true
+}
 
+variable "tevin_d_zone_id" {
+  description = "Zone id for tevin-d.com in cloudflare"
+  type        = string
+  sensitive   = true
+}
+
+variable "cloudflare_email" {
+  description = "Email of cloudflare account"
+  type        = string
+  sensitive   = true
+
+}
 

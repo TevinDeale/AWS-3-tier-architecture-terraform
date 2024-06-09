@@ -12,11 +12,20 @@ terraform {
       source  = "hashicorp/aws"
       version = "~> 5.0"
     }
+
+    cloudflare = {
+      source  = "cloudflare/cloudflare"
+      version = "~> 4.0"
+    }
   }
 }
 
 provider "aws" {
   region = "us-east-1"
+}
+
+provider "cloudflare" {
+  api_token = var.cloudflare_api_key
 }
 
 module "vpc" {
@@ -411,4 +420,13 @@ module "elb" {
       tg_arn      = lookup({ for tg in module.elb.tgs : tg.name => tg.arn }, "rb-db-tg")
     }
   ]
+}
+
+resource "cloudflare_record" "rb-dns-record" {
+  depends_on = [module.elb]
+  zone_id    = var.tevin_d_zone_id
+  name       = "rocketbank"
+  value      = lookup({ for lb_dns in module.elb.elb : lb_dns.name => lb_dns.dns }, "rb-web-proxy-alb")
+  type       = "CNAME"
+  proxied    = false
 }
