@@ -11,6 +11,17 @@ Rocket Bank Application URLs:
 
 ![Tech Stack](https://skillicons.dev/icons?i=aws,terraform,bash,cloudflare,githubactions,postgres,linux&perline=7)
 
+### AWS Services
+
+- VPC
+- EC2
+- Application Load Balancer
+- Network Load Balancer
+- NAT Gateway
+- Internet Gateway
+- Egress Only Internet Gateway
+- Security Groups
+
 ## Diagram
 
 ![AWS Diagram](https://github.com/TevinDeale/rocketbank-AWS-3-tier-architecture-terraform/blob/readme/.github/assets/rocketbank-aws-diagram-v1.png)
