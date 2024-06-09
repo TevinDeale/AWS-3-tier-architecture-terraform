@@ -13,7 +13,7 @@ Rocket Bank Application URLs:
 
 ## Diagram
 
-![AWS Diagram](https://github.com/TevinDeale/rocket-bank-3-tier-architecture/.github/assets/rocketbank-aws-diagram-v1.png)
+![AWS Diagram](https://github.com/TevinDeale/aws-3-tier-architecture/.github/assets/rocketbank-aws-diagram-v1.png)
 
 ## Contributing
 
