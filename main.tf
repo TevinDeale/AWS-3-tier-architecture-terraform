@@ -92,6 +92,18 @@ module "instance" {
       volume_size    = 20
       user_data      = templatefile("${path.module}/userdata/tailscale.sh", { tailscale_key = var.tailscale_key })
     },
+    {
+      ami            = "ami-00beae93a2d981137"
+      type           = "t2.micro"
+      name           = "rb-sas-use-1a-2"
+      subnet_id      = lookup(local.subnet_name_to_id, "rocket-bank-use-1a-sas")
+      public_ipv4    = false
+      ipv6_count     = 1
+      security_group = [lookup(local.sg_name_to_id, "sas-sg")]
+      key            = "rb"
+      volume_size    = 20
+      user_data      = templatefile("${path.module}/userdata/tailscale.sh", { tailscale_key = var.tailscale_key })
+    },
     #web Instances
     {
       ami            = "ami-00beae93a2d981137"
