@@ -95,7 +95,7 @@ module "instance" {
     {
       ami            = "ami-00beae93a2d981137"
       type           = "t2.micro"
-      name           = "rb-sas-use-1a-2"
+      name           = "rb-sas-use-1a-02"
       subnet_id      = lookup(local.subnet_name_to_id, "rocket-bank-use-1a-sas")
       public_ipv4    = false
       ipv6_count     = 1
