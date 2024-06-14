@@ -216,6 +216,17 @@ sg_egress_rule = [
     from_port    = 443,
     to_port      = 443,
     description  = "All HTTPS IPv6 traffic out allowed"
+  },
+  {
+    name         = "replicated_postgres",
+    sg_id        = "db-sg",
+    ip_proto     = "tcp",
+    source_ipv4  = null,
+    source_ipv6  = null,
+    source_sg_id = "db-sg",
+    from_port    = 5432,
+    to_port      = 5432,
+    description  = "Allow postgres traffic to replcated dbs"
   }
 ]
 
@@ -332,6 +343,17 @@ sg_ingress_rule = [
     from_port    = 5432,
     to_port      = 5432,
     description  = "Allow db connection from web server sg"
+  },
+  {
+    name         = "postgres_replication",
+    sg_id        = "db-sg",
+    ip_proto     = "tcp",
+    source_ipv4  = null,
+    source_ipv6  = null,
+    source_sg_id = "db-sg",
+    from_port    = 5432,
+    to_port      = 5432,
+    description  = "Allow db connection from db sg"
   },
   {
     name         = "icmp_from_sas_to_db",
