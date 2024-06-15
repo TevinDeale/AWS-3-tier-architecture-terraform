@@ -100,7 +100,8 @@
       become_user: postgres
       community.postgresql.postgresql_query:
         db: rocketbank
-        query: "CREATE ROLE {{ pg_replication_username }} WITH REPLICATION PASSWORD '{{ pg_replication_password }}'"
+        query: "CREATE USER {{ pg_replication_username }} WITH REPLICATION PASSWORD '{{ pg_replication_password }}'"
+      when: created_rocketank_db.changed
 
     - name: Add repuser to pg_hba with password auth
       become_user: root
@@ -109,11 +110,28 @@
         contype: host
         users: repuser
         source: 192.168.30.0/24
-        databases: rocketbank
-        method: md5
+        databases: replication
+        method: trust
       register: add_repuser_pg_hba
 
     - name: Restart Database Service
       ansible.builtin.command:
         cmd: systemctl restart postgresql
       when: add_repuser_pg_hba.changed
+
+- name: Configure Replication Node 1
+  hosts: rb-db-use-1b
+  become: true
+  vars_files:
+    - rocketbank-vault.yaml
+  vars:
+    pg_replication_username: "{{ pg_replication_username }}"
+    pg_replication_password: "{{ pg_replication_password }}"
+  
+  tasks:
+    - name: Pull back from Master Node using pg_basebackup
+      become_user: postgres
+      ansible.builtin.command:
+        cmd: pg_basebackup -h "{{ hostvars['rb-db-use-1a']['ansible_host'] }}" -U "{{ pg_replication_username }}" -W --checkpoint=fast -D /home/ec2-user/pgsql/rocketbank/ -d "dbname=rocketbank" -R --slot=rep_1 -C
+      args:
+        creates: /home/ec2-user/pgsql/rocketbank/
