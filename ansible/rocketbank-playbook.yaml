@@ -1,0 +1,70 @@
+- name: Install PostgreSQL  on Database Servers
+  hosts: databases
+  remote_user: ec2-user
+  become: true
+  vars_files:
+    - rocketbank-vault.yaml
+
+  tasks:
+    - name: Install PostgreSQL
+      ansible.builtin.yum:
+        name: postgresql15-server
+        state: latest
+
+    - name: Init PostgreSQL Database
+      ansible.builtin.command:
+        cmd: /usr/bin/postgresql-setup --initdb
+      args:
+        creates: /var/lib/pgsql/data
+
+    - name: Ensure that PostgreSQL is started and enabled at boot
+      ansible.builtin.service:
+        name: postgresql
+        state: started
+        enabled: true
+
+- name: Install Docker and Login to DockerHub on Web and App Servers
+  hosts: webservers appservers
+  remote_user: ec2-user
+  become: true
+
+  tasks:
+    - name: Install Docker
+      ansible.builtin.yum:
+        name: docker
+        state: latest
+
+    - name: Login to Docker DockerHub
+      community.docker.docker_login:
+        username: "{{ docker_username }}"
+        password: "{{ docker_password }}"
+
+- name: Pull Docker Images for Webservers
+  hosts: webservers
+  remote_user: ec2-user
+  become: true
+
+  tasks:
+    - name: Pull rocketbank-front-end
+      community.docker.docker_image:
+        name: tevindeale/rocketbank-front-end
+        tag: latest
+        source: pull
+
+- name: Pull Docker Images for Appservers
+  hosts: appservers
+  remote_user: ec2-user
+  become: true
+
+  tasks:
+    - name: Pull rocketbank-middleware
+      community.docker.docker_image:
+        name: tevindeale/rocketbank-middleware
+        tag: latest
+        source: pull
+
+    - name: Pull rocketbank-spring-api
+      community.docker.docker_image:
+        name: tevindeale/rocketbank-spring-api
+        tag: latest
+        source: pull
