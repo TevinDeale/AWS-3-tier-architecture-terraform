@@ -121,33 +121,125 @@
 
 - name: Configure Replication Node 1
   hosts: rb-db-use-1b
-  become: true
   vars_files:
     - rocketbank-vault.yaml
   vars:
     pg_replication_username: "{{ pg_replication_username }}"
     pg_replication_password: "{{ pg_replication_password }}"
-  
+
   tasks:
-    - name: Pull back from Master Node using pg_basebackup
+    - name: Create a random file to check
+      become: true
+      shell: |
+        echo "I exist" >> /var/lib/pgsql/data/exist.txt
+      args:
+        creates: /var/lib/pgsql/data/exist.txt
+      register: exist
+
+    - name: Stop Postgres Service
       ansible.builtin.command:
-        cmd: pg_basebackup -h "{{ hostvars['rb-db-use-1a']['ansible_host'] }}" -U "{{ pg_replication_username }}" -W --checkpoint=fast -D /var/lib/pgsql/data -d "dbname=rocketbank" -R --slot=rep_2 -C
+        cmd: sudo systemctl stop postgresql
+      when: exist.changed
+
+    - name: Remove existing data
+      ansible.builtin.command:
+        cmd: sudo rm -rf /var/lib/pgsql/data
       args:
         creates: /var/lib/pgsql/data
+      when: exist.changed
+
+    - name: Pull back from Master Node using pg_basebackup
+      shell: |
+        sudo -u postgres pg_basebackup \
+          -h "{{ hostvars['rb-db-use-1a']['ansible_host'] }}" \
+          -U "{{ pg_replication_username }}" \
+          --checkpoint=fast \
+          -D /var/lib/pgsql/data \
+          -d "dbname=rocketbank" \
+          -R --slot=rep_2 \
+          -C
+      environment: 
+        PGPASSWORD: "{{ pg_replication_password }}"
+      when: exist.changed
+
+    - name: Start Postgres Service
+      become: true
+      ansible.builtin.command:
+        cmd: systemctl start postgresql
+
+    - name: Change listening address to all
+      become: true
+      become_user: postgres
+      community.postgresql.postgresql_set:
+        port: 5433
+        name: listen_addresses
+        value: "*"
+      register: change_listen_address
+
+    - name: Restart Database Service
+      become: true
+      ansible.builtin.command:
+        cmd: systemctl restart postgresql
+      when: change_listen_address.changed
 
 - name: Configure Replication Node 2
   hosts: rb-db-use-1c
-  become: true
-  become_user: postgres
   vars_files:
     - rocketbank-vault.yaml
   vars:
     pg_replication_username: "{{ pg_replication_username }}"
     pg_replication_password: "{{ pg_replication_password }}"
-  
+
   tasks:
-    - name: Pull back from Master Node using pg_basebackup
+    - name: Create a random file to check
+      become: true
+      shell: |
+        echo "I exist" >> /var/lib/pgsql/data/exist.txt
+      args:
+        creates: /var/lib/pgsql/data/exist.txt
+      register: exist
+
+    - name: Stop Postgres Service
       ansible.builtin.command:
-        cmd: pg_basebackup -h "{{ hostvars['rb-db-use-1a']['ansible_host'] }}" -U "{{ pg_replication_username }}" -W --checkpoint=fast -D /var/lib/pgsql/data -d "dbname=rocketbank" -R --slot=rep_3 -C
+        cmd: sudo systemctl stop postgresql
+      when: exist.changed
+
+    - name: Remove existing data
+      ansible.builtin.command:
+        cmd: sudo rm -rf /var/lib/pgsql/data
       args:
         creates: /var/lib/pgsql/data
+      when: exist.changed
+
+    - name: Pull back from Master Node using pg_basebackup
+      shell: |
+        sudo -u postgres pg_basebackup \
+          -h "{{ hostvars['rb-db-use-1a']['ansible_host'] }}" \
+          -U "{{ pg_replication_username }}" \
+          --checkpoint=fast \
+          -D /var/lib/pgsql/data \
+          -d "dbname=rocketbank" \
+          -R --slot=rep_5 \
+          -C
+      environment: 
+        PGPASSWORD: "{{ pg_replication_password }}"
+      when: exist.changed
+
+    - name: Start Postgres Service
+      become: true
+      ansible.builtin.command:
+        cmd: systemctl start postgresql
+
+    - name: Change listening address to all
+      become: true
+      become_user: postgres
+      community.postgresql.postgresql_set:
+        name: listen_addresses
+        value: "*"
+      register: change_listen_address
+
+    - name: Restart Database Service
+      become: true
+      ansible.builtin.command:
+        cmd: systemctl restart postgresql
+      when: change_listen_address.changed
