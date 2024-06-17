@@ -101,7 +101,7 @@
       community.postgresql.postgresql_query:
         db: rocketbank
         query: "CREATE USER {{ pg_replication_username }} WITH REPLICATION PASSWORD '{{ pg_replication_password }}'"
-      when: created_rocketank_db.changed
+      when: created_rockebank_db.changed
 
     - name: Add repuser to pg_hba with password auth
       become_user: root
