@@ -1,4 +1,4 @@
-- name: Install PostgreSQL Python, and Psycopg2 on Database Servers
+- name: Install PostgreSQL, Python, pgpool, and Psycopg2 on Database Servers
   hosts: databases
   remote_user: ec2-user
   become: true
@@ -24,6 +24,11 @@
         name: psycopg2-binary
         state: present
         executable: pip3.9
+
+    - name: Install pgpooll
+      ansible.builtin.yum:
+        name: pgpool-ii
+        state: present
 
 - name: Initialize Master Database
   hosts: rb-db-use-1a
@@ -171,7 +176,7 @@
       become: true
       become_user: postgres
       community.postgresql.postgresql_set:
-        port: 5433
+        port: 5432
         name: listen_addresses
         value: "*"
       register: change_listen_address

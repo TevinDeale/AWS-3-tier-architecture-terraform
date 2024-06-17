@@ -207,6 +207,7 @@ module "instance" {
 }
 
 module "elb" {
+  depends_on = [ module.instance ]
   source = "./modules/loadbalancer"
 
   tg = [

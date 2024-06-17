@@ -1,31 +1,31 @@
 webservers:
   hosts:
     rb-web-use-1a:
-      ansible_host: 192.168.30.20
+      ansible_host: 192.168.30.23
     rb-web-use-1b:
       ansible_host: 192.168.30.71
     rb-web-use-1c:
-      ansible_host: 192.168.30.117
+      ansible_host: 192.168.30.123
 
 appservers:
   hosts:
     rb-app-use-1a:
-      ansible_host: 192.168.30.45
+      ansible_host: 192.168.30.42
     rb-app-use-1b:
-      ansible_host: 192.168.30.94
+      ansible_host: 192.168.30.85
     rb-app-use-1c:
-      ansible_host: 192.168.30.136
+      ansible_host: 192.168.30.138
 
 databases:
   hosts:
     rb-db-use-1a:
-      ansible_host: 192.168.30.60
+      ansible_host: 192.168.30.55
       ansible_python_interpreter: /usr/bin/python3.9
     rb-db-use-1b:
-      ansible_host: 192.168.30.101
+      ansible_host: 192.168.30.103
       ansible_python_interpreter: /usr/bin/python3.9
     rb-db-use-1c:
-      ansible_host: 192.168.30.149
+      ansible_host: 192.168.30.148
       ansible_python_interpreter: /usr/bin/python3.9
 
 rocketbank-aws:
