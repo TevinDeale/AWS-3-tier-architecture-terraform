@@ -25,8 +25,8 @@
         state: present
         executable: pip3.9
 
-- name: Initialize Databases
-  hosts: databases
+- name: Initialize Master Database
+  hosts: rb-db-use-1a
   remote_user: ec2-user
   become: true
 
@@ -130,8 +130,24 @@
   
   tasks:
     - name: Pull back from Master Node using pg_basebackup
-      become_user: postgres
       ansible.builtin.command:
-        cmd: pg_basebackup -h "{{ hostvars['rb-db-use-1a']['ansible_host'] }}" -U "{{ pg_replication_username }}" -W --checkpoint=fast -D /home/ec2-user/pgsql/rocketbank/ -d "dbname=rocketbank" -R --slot=rep_1 -C
+        cmd: pg_basebackup -h "{{ hostvars['rb-db-use-1a']['ansible_host'] }}" -U "{{ pg_replication_username }}" -W --checkpoint=fast -D /var/lib/pgsql/data -d "dbname=rocketbank" -R --slot=rep_2 -C
       args:
-        creates: /home/ec2-user/pgsql/rocketbank/
+        creates: /var/lib/pgsql/data
+
+- name: Configure Replication Node 2
+  hosts: rb-db-use-1c
+  become: true
+  become_user: postgres
+  vars_files:
+    - rocketbank-vault.yaml
+  vars:
+    pg_replication_username: "{{ pg_replication_username }}"
+    pg_replication_password: "{{ pg_replication_password }}"
+  
+  tasks:
+    - name: Pull back from Master Node using pg_basebackup
+      ansible.builtin.command:
+        cmd: pg_basebackup -h "{{ hostvars['rb-db-use-1a']['ansible_host'] }}" -U "{{ pg_replication_username }}" -W --checkpoint=fast -D /var/lib/pgsql/data -d "dbname=rocketbank" -R --slot=rep_3 -C
+      args:
+        creates: /var/lib/pgsql/data
