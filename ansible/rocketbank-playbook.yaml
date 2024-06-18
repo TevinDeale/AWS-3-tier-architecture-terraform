@@ -1,4 +1,4 @@
-- name: Install PostgreSQL, Python, pgpool, and Psycopg2 on Database Servers
+- name: Install PostgreSQL, Python, and Psycopg2 on Database Servers
   hosts: databases
   remote_user: ec2-user
   become: true
@@ -25,11 +25,6 @@
         state: present
         executable: pip3.9
 
-    - name: Install pgpooll
-      ansible.builtin.yum:
-        name: pgpool-ii
-        state: present
-
 - name: Initialize Master Database
   hosts: rb-db-use-1a
   remote_user: ec2-user
@@ -37,6 +32,7 @@
 
   tasks:
     - name: Init PostgreSQL Database
+      become_user: postgres
       ansible.builtin.command:
         cmd: /usr/bin/postgresql-setup --initdb
       args:
@@ -135,10 +131,11 @@
   tasks:
     - name: Create a random file to check
       become: true
+      become_user: postgres
       shell: |
-        echo "I exist" >> /var/lib/pgsql/data/exist.txt
+        echo "I exist" >> /var/lib/pgsql/exist.txt
       args:
-        creates: /var/lib/pgsql/data/exist.txt
+        creates: /var/lib/pgsql/exist.txt
       register: exist
 
     - name: Stop Postgres Service
@@ -161,7 +158,7 @@
           --checkpoint=fast \
           -D /var/lib/pgsql/data \
           -d "dbname=rocketbank" \
-          -R --slot=rep_2 \
+          -R --slot=node_1 \
           -C
       environment: 
         PGPASSWORD: "{{ pg_replication_password }}"
@@ -179,13 +176,13 @@
         port: 5432
         name: listen_addresses
         value: "*"
-      register: change_listen_address
+      register: change_listen_address_node_1
 
     - name: Restart Database Service
       become: true
       ansible.builtin.command:
         cmd: systemctl restart postgresql
-      when: change_listen_address.changed
+      when: change_listen_address_node_1.changed
 
 - name: Configure Replication Node 2
   hosts: rb-db-use-1c
@@ -198,10 +195,11 @@
   tasks:
     - name: Create a random file to check
       become: true
+      become_user: postgres
       shell: |
-        echo "I exist" >> /var/lib/pgsql/data/exist.txt
+        echo "I exist" >> /var/lib/pgsql/exist.txt
       args:
-        creates: /var/lib/pgsql/data/exist.txt
+        creates: /var/lib/pgsql/exist.txt
       register: exist
 
     - name: Stop Postgres Service
@@ -224,7 +222,7 @@
           --checkpoint=fast \
           -D /var/lib/pgsql/data \
           -d "dbname=rocketbank" \
-          -R --slot=rep_5 \
+          -R --slot=node_2 \
           -C
       environment: 
         PGPASSWORD: "{{ pg_replication_password }}"
@@ -241,10 +239,10 @@
       community.postgresql.postgresql_set:
         name: listen_addresses
         value: "*"
-      register: change_listen_address
+      register: change_listen_address_node_2
 
     - name: Restart Database Service
       become: true
       ansible.builtin.command:
         cmd: systemctl restart postgresql
-      when: change_listen_address.changed
+      when: change_listen_address_node_2.changed
