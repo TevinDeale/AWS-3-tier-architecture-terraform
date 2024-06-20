@@ -185,7 +185,7 @@ module "instance" {
       security_group = [lookup(local.sg_name_to_id, "db-sg")]
       key            = "rb"
       volume_size    = 8
-      user_data      = templatefile("${path.module}/userdata/hostname.sh", { name = "rb-db-use-1a" })
+      user_data      = templatefile("${path.module}/userdata/hostname_ubuntu.sh", { name = "rb-db-use-1a" })
     },
     {
       ami            = "ami-04b70fa74e45c3917"
@@ -198,7 +198,7 @@ module "instance" {
       security_group = [lookup(local.sg_name_to_id, "db-sg")]
       key            = "rb"
       volume_size    = 8
-      user_data      = templatefile("${path.module}/userdata/hostname.sh", { name = "rb-db-use-1b" })
+      user_data      = templatefile("${path.module}/userdata/hostname_ubuntu.sh", { name = "rb-db-use-1b" })
     },
     {
       ami            = "ami-04b70fa74e45c3917"
@@ -211,7 +211,7 @@ module "instance" {
       security_group = [lookup(local.sg_name_to_id, "db-sg")]
       key            = "rb"
       volume_size    = 8
-      user_data      = templatefile("${path.module}/userdata/hostname.sh", { name = "rb-db-use-1c" })
+      user_data      = templatefile("${path.module}/userdata/hostname_ubuntu.sh", { name = "rb-db-use-1c" })
     },
   ]
 }
