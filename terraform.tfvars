@@ -196,6 +196,28 @@ sg_egress_rule = [
   },
   #DB-SG Rules
   {
+    name         = "http_traffic_out_ipv6_db",
+    sg_id        = "db-sg",
+    ip_proto     = "tcp",
+    source_ipv4  = null,
+    source_ipv6  = "::/0",
+    source_sg_id = null,
+    from_port    = 80,
+    to_port      = 80,
+    description  = "All HTTP IPv6 traffic out allowed"
+  },
+  {
+    name         = "http_traffic_out_ipv4_db",
+    sg_id        = "db-sg",
+    ip_proto     = "tcp",
+    source_ipv4  = "0.0.0.0/0",
+    source_ipv6  = null,
+    source_sg_id = null,
+    from_port    = 80,
+    to_port      = 80,
+    description  = "All HTTP IPv4 traffic out allowed"
+  },
+  {
     name         = "https_traffic_out_ipv4_db",
     sg_id        = "db-sg",
     ip_proto     = "tcp",
