@@ -1,9 +1,7 @@
-- name: Install PostgreSQL  on Database Servers
+- name: Install PostgreSQL, Python, and Psycopg2 on Database Servers
   hosts: databases
   remote_user: ec2-user
   become: true
-  vars_files:
-    - rocketbank-vault.yaml
 
   tasks:
     - name: Install PostgreSQL
@@ -11,7 +9,30 @@
         name: postgresql15-server
         state: latest
 
+    - name: Install Python
+      ansible.builtin.yum:
+        name: python
+        state: present
+
+    - name: Install pip
+      ansible.builtin.yum:
+        name: python3-pip
+        state: present
+
+    - name: Install Psycopg2
+      ansible.builtin.pip:
+        name: psycopg2-binary
+        state: present
+        executable: pip3.9
+
+- name: Initialize Master Database
+  hosts: rb-db-use-1a
+  remote_user: ec2-user
+  become: true
+
+  tasks:
     - name: Init PostgreSQL Database
+      become_user: postgres
       ansible.builtin.command:
         cmd: /usr/bin/postgresql-setup --initdb
       args:
@@ -23,48 +44,205 @@
         state: started
         enabled: true
 
-- name: Install Docker and Login to DockerHub on Web and App Servers
-  hosts: webservers appservers
-  remote_user: ec2-user
+    - name: Change listening address to all
+      become_user: postgres
+      community.postgresql.postgresql_set:
+        name: listen_addresses
+        value: "*"
+      register: change_listen_address
+
+    - name: Open port 5432
+      become_user: postgres
+      community.postgresql.postgresql_set:
+        name: port
+        value: 5432
+      register: change_port
+
+    - name: Restart Database Service
+      ansible.builtin.command:
+        cmd: systemctl restart postgresql
+      when: change_listen_address.changed or change_port.changed
+
+- name: Configure Master DB
+  hosts: rb-db-use-1a
   become: true
+  vars_files:
+    - rocketbank-vault.yaml
+  vars:
+    pg_replication_username: "{{ pg_replication_username }}"
+    pg_replication_password: "{{ pg_replication_password }}"
 
   tasks:
-    - name: Install Docker
-      ansible.builtin.yum:
-        name: docker
-        state: latest
+    - name: Copy PostgreSQL configuration file
+      become: true
+      copy:
+        src: rocketbankdev_0522
+        dest: /ec2-user/home/db/
+        owner: postgres
+        group: postgres
+        mode: '0644'
 
-    - name: Login to Docker DockerHub
-      community.docker.docker_login:
-        username: "{{ docker_username }}"
-        password: "{{ docker_password }}"
+    - name: Create RocketBank DB
+      become_user: postgres
+      community.postgresql.postgresql_db:
+        name: rocketbank
+        state: present
+      register: created_rocketbank_db
 
-- name: Pull Docker Images for Webservers
-  hosts: webservers
-  remote_user: ec2-user
-  become: true
+    - name: Restore Rocketbank DB
+      become_user: postgres
+      community.postgresql.postgresql_db:
+        name: rocketbank
+        target: /ec2-user/home/db/rocketbankdev_0522
+        state: restore
+      when: created_rocketbank_db.changed
+
+    - name: Create repuser
+      become_user: postgres
+      community.postgresql.postgresql_query:
+        db: rocketbank
+        query: "CREATE USER {{ pg_replication_username }} WITH REPLICATION PASSWORD '{{ pg_replication_password }}'"
+      when: created_rocketbank_db.changed
+
+    - name: Add repuser to pg_hba with password auth
+      become_user: root
+      community.postgresql.postgresql_pg_hba:
+        dest: /var/lib/pgsql/data/pg_hba.conf
+        contype: host
+        users: repuser
+        source: 192.168.30.0/24
+        databases: replication
+        method: trust
+      register: add_repuser_pg_hba
+
+    - name: Restart Database Service
+      ansible.builtin.command:
+        cmd: systemctl restart postgresql
+      when: add_repuser_pg_hba.changed
+
+- name: Configure Replication Node 1
+  hosts: rb-db-use-1b
+  vars_files:
+    - rocketbank-vault.yaml
+  vars:
+    pg_replication_username: "{{ pg_replication_username }}"
+    pg_replication_password: "{{ pg_replication_password }}"
 
   tasks:
-    - name: Pull rocketbank-front-end
-      community.docker.docker_image:
-        name: tevindeale/rocketbank-front-end
-        tag: latest
-        source: pull
+    - name: Create a random file to check
+      become: true
+      become_user: postgres
+      shell: |
+        echo "I exist" >> /var/lib/pgsql/exist.txt
+      args:
+        creates: /var/lib/pgsql/exist.txt
+      register: exist
 
-- name: Pull Docker Images for Appservers
-  hosts: appservers
-  remote_user: ec2-user
-  become: true
+    - name: Stop Postgres Service
+      ansible.builtin.command:
+        cmd: sudo systemctl stop postgresql
+      when: exist.changed
+
+    - name: Remove existing data
+      ansible.builtin.command:
+        cmd: sudo rm -rf /var/lib/pgsql/data
+      args:
+        creates: /var/lib/pgsql/data
+      when: exist.changed
+
+    - name: Pull back from Master Node using pg_basebackup
+      shell: |
+        sudo -u postgres pg_basebackup \
+          -h "{{ hostvars['rb-db-use-1a']['ansible_host'] }}" \
+          -U "{{ pg_replication_username }}" \
+          --checkpoint=fast \
+          -D /var/lib/pgsql/data \
+          -d "dbname=rocketbank" \
+          -R --slot=node_1 \
+          -C
+      environment: 
+        PGPASSWORD: "{{ pg_replication_password }}"
+      when: exist.changed
+
+    - name: Start Postgres Service
+      become: true
+      ansible.builtin.command:
+        cmd: systemctl start postgresql
+
+    - name: Change listening address to all
+      become: true
+      become_user: postgres
+      community.postgresql.postgresql_set:
+        port: 5432
+        name: listen_addresses
+        value: "*"
+      register: change_listen_address_node_1
+
+    - name: Restart Database Service
+      become: true
+      ansible.builtin.command:
+        cmd: systemctl restart postgresql
+      when: change_listen_address_node_1.changed
+
+- name: Configure Replication Node 2
+  hosts: rb-db-use-1c
+  vars_files:
+    - rocketbank-vault.yaml
+  vars:
+    pg_replication_username: "{{ pg_replication_username }}"
+    pg_replication_password: "{{ pg_replication_password }}"
 
   tasks:
-    - name: Pull rocketbank-middleware
-      community.docker.docker_image:
-        name: tevindeale/rocketbank-middleware
-        tag: latest
-        source: pull
+    - name: Create a random file to check
+      become: true
+      become_user: postgres
+      shell: |
+        echo "I exist" >> /var/lib/pgsql/exist.txt
+      args:
+        creates: /var/lib/pgsql/exist.txt
+      register: exist
 
-    - name: Pull rocketbank-spring-api
-      community.docker.docker_image:
-        name: tevindeale/rocketbank-spring-api
-        tag: latest
-        source: pull
+    - name: Stop Postgres Service
+      ansible.builtin.command:
+        cmd: sudo systemctl stop postgresql
+      when: exist.changed
+
+    - name: Remove existing data
+      ansible.builtin.command:
+        cmd: sudo rm -rf /var/lib/pgsql/data
+      args:
+        creates: /var/lib/pgsql/data
+      when: exist.changed
+
+    - name: Pull back from Master Node using pg_basebackup
+      shell: |
+        sudo -u postgres pg_basebackup \
+          -h "{{ hostvars['rb-db-use-1a']['ansible_host'] }}" \
+          -U "{{ pg_replication_username }}" \
+          --checkpoint=fast \
+          -D /var/lib/pgsql/data \
+          -d "dbname=rocketbank" \
+          -R --slot=node_2 \
+          -C
+      environment: 
+        PGPASSWORD: "{{ pg_replication_password }}"
+      when: exist.changed
+
+    - name: Start Postgres Service
+      become: true
+      ansible.builtin.command:
+        cmd: systemctl start postgresql
+
+    - name: Change listening address to all
+      become: true
+      become_user: postgres
+      community.postgresql.postgresql_set:
+        name: listen_addresses
+        value: "*"
+      register: change_listen_address_node_2
+
+    - name: Restart Database Service
+      become: true
+      ansible.builtin.command:
+        cmd: systemctl restart postgresql
+      when: change_listen_address_node_2.changed
