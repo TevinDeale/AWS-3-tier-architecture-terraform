@@ -1,43 +1,37 @@
-- name: Install PostgreSQL, Python, and Psycopg2 on Database Servers
+- name: Install PostgreSQL, pgpool2, and Psycopg2 on Database Servers
   hosts: databases
-  remote_user: ec2-user
   become: true
 
   tasks:
+    - name: Update apt cache
+      apt:
+        update_cache: yes
+
     - name: Install PostgreSQL
-      ansible.builtin.yum:
-        name: postgresql15-server
-        state: latest
-
-    - name: Install Python
-      ansible.builtin.yum:
-        name: python
-        state: present
-
-    - name: Install pip
-      ansible.builtin.yum:
-        name: python3-pip
+      apt:
+        name: postgresql-16
         state: present
 
     - name: Install Psycopg2
-      ansible.builtin.pip:
-        name: psycopg2-binary
+      apt:
+        name: python3-psycopg2
         state: present
-        executable: pip3.9
+
+    - name: Install pgpool2
+      apt:
+        name: pgpool2
+        state: present
+
+    - name: Install ACL
+      apt:
+        name: acl
+        state: present
 
 - name: Initialize Master Database
   hosts: rb-db-use-1a
-  remote_user: ec2-user
   become: true
 
   tasks:
-    - name: Init PostgreSQL Database
-      become_user: postgres
-      ansible.builtin.command:
-        cmd: /usr/bin/postgresql-setup --initdb
-      args:
-        creates: /var/lib/pgsql/data
-
     - name: Ensure that PostgreSQL is started and enabled at boot
       ansible.builtin.service:
         name: postgresql
@@ -46,22 +40,20 @@
 
     - name: Change listening address to all
       become_user: postgres
-      community.postgresql.postgresql_set:
-        name: listen_addresses
-        value: "*"
+      lineinfile:
+        path: /etc/postgresql/16/main/postgresql.conf
+        regexp: '^#?(listen_addresses = )(.*)$'
+        line: 'listen_addresses = "*"'
+        backup: true
       register: change_listen_address
+      notify: Restart PostgreSQL
 
-    - name: Open port 5432
-      become_user: postgres
-      community.postgresql.postgresql_set:
-        name: port
-        value: 5432
-      register: change_port
-
-    - name: Restart Database Service
-      ansible.builtin.command:
-        cmd: systemctl restart postgresql
-      when: change_listen_address.changed or change_port.changed
+  handlers:
+    - name: Restart PostgreSQL
+      service:
+        name: postgresql
+        state: restarted
+    
 
 - name: Configure Master DB
   hosts: rb-db-use-1a
@@ -77,7 +69,7 @@
       become: true
       copy:
         src: rocketbankdev_0522
-        dest: /ec2-user/home/db/
+        dest: /home/ubuntu/pgsql/rocketbank/
         owner: postgres
         group: postgres
         mode: '0644'
@@ -90,10 +82,11 @@
       register: created_rocketbank_db
 
     - name: Restore Rocketbank DB
+      become: true
       become_user: postgres
       community.postgresql.postgresql_db:
         name: rocketbank
-        target: /ec2-user/home/db/rocketbankdev_0522
+        target: /home/ubuntu/pgsql/rocketbank/rocketbankdev_0522
         state: restore
       when: created_rocketbank_db.changed
 
@@ -107,7 +100,7 @@
     - name: Add repuser to pg_hba with password auth
       become_user: root
       community.postgresql.postgresql_pg_hba:
-        dest: /var/lib/pgsql/data/pg_hba.conf
+        dest: /etc/postgresql/16/main/pg_hba.conf
         contype: host
         users: repuser
         source: 192.168.30.0/24
@@ -130,12 +123,10 @@
 
   tasks:
     - name: Create a random file to check
-      become: true
-      become_user: postgres
       shell: |
-        echo "I exist" >> /var/lib/pgsql/exist.txt
+        echo "I exist" >> /home/ubuntu/exist.txt
       args:
-        creates: /var/lib/pgsql/exist.txt
+        creates: /home/ubuntu/exist.txt
       register: exist
 
     - name: Stop Postgres Service
@@ -145,9 +136,9 @@
 
     - name: Remove existing data
       ansible.builtin.command:
-        cmd: sudo rm -rf /var/lib/pgsql/data
+        cmd: sudo rm -rf /var/lib/postgresql/16/main
       args:
-        creates: /var/lib/pgsql/data
+        creates: /var/lib/postgresql/16/main
       when: exist.changed
 
     - name: Pull back from Master Node using pg_basebackup
@@ -156,7 +147,7 @@
           -h "{{ hostvars['rb-db-use-1a']['ansible_host'] }}" \
           -U "{{ pg_replication_username }}" \
           --checkpoint=fast \
-          -D /var/lib/pgsql/data \
+          -D /var/lib/postgresql/16/main \
           -d "dbname=rocketbank" \
           -R --slot=node_1 \
           -C
@@ -194,10 +185,8 @@
 
   tasks:
     - name: Create a random file to check
-      become: true
-      become_user: postgres
       shell: |
-        echo "I exist" >> /var/lib/pgsql/exist.txt
+        echo "I exist" >> /home/ubuntu/exist.txt
       args:
         creates: /var/lib/pgsql/exist.txt
       register: exist
@@ -209,9 +198,9 @@
 
     - name: Remove existing data
       ansible.builtin.command:
-        cmd: sudo rm -rf /var/lib/pgsql/data
+        cmd: sudo rm -rf /var/lib/postgresql/16/main
       args:
-        creates: /var/lib/pgsql/data
+        creates: /var/lib/postgresql/16/main
       when: exist.changed
 
     - name: Pull back from Master Node using pg_basebackup
@@ -220,7 +209,7 @@
           -h "{{ hostvars['rb-db-use-1a']['ansible_host'] }}" \
           -U "{{ pg_replication_username }}" \
           --checkpoint=fast \
-          -D /var/lib/pgsql/data \
+          -D /var/lib/postgresql/16/main \
           -d "dbname=rocketbank" \
           -R --slot=node_2 \
           -C
