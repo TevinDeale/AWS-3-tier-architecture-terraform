@@ -57,7 +57,7 @@ resource "aws_lb_target_group" "tg" {
 }
 
 resource "aws_lb_target_group_attachment" "targets" {
-  depends_on = [ aws_lb_target_group.tg ]
+  depends_on = [aws_lb_target_group.tg]
   for_each = { for idx, target in var.targets : "${target.target_id}-${idx}" => {
     tg_arn    = target.tg_arn
     target_id = target.target_id

@@ -5,6 +5,7 @@ variable "instances" {
     type           = string
     name           = string
     subnet_id      = string
+    private_ip     = string
     public_ipv4    = bool
     ipv6_count     = number
     security_group = list(string)

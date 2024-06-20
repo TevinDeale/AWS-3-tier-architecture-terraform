@@ -85,6 +85,7 @@ module "instance" {
       type           = "t2.micro"
       name           = "rb-sas-use-1a-2"
       subnet_id      = lookup(local.subnet_name_to_id, "rocket-bank-use-1a-sas")
+      private_ip     = "192.168.30.14"
       public_ipv4    = false
       ipv6_count     = 1
       security_group = [lookup(local.sg_name_to_id, "sas-sg")]
@@ -98,6 +99,7 @@ module "instance" {
       type           = "t2.micro"
       name           = "rb-web-use-1a"
       subnet_id      = lookup(local.subnet_name_to_id, "rocket-bank-use-1a-web")
+      private_ip     = "192.168.30.23"
       public_ipv4    = false
       ipv6_count     = 1
       security_group = [lookup(local.sg_name_to_id, "web-sg")]
@@ -110,6 +112,7 @@ module "instance" {
       type           = "t2.micro"
       name           = "rb-web-use-1b"
       subnet_id      = lookup(local.subnet_name_to_id, "rocket-bank-use-1b-web")
+      private_ip     = "192.168.30.71"
       public_ipv4    = false
       ipv6_count     = 1
       security_group = [lookup(local.sg_name_to_id, "web-sg")]
@@ -122,6 +125,7 @@ module "instance" {
       type           = "t2.micro"
       name           = "rb-web-use-1c"
       subnet_id      = lookup(local.subnet_name_to_id, "rocket-bank-use-1c-web")
+      private_ip     = "192.168.30.123"
       public_ipv4    = false
       ipv6_count     = 1
       security_group = [lookup(local.sg_name_to_id, "web-sg")]
@@ -135,6 +139,7 @@ module "instance" {
       type           = "t2.micro"
       name           = "rb-app-use-1a"
       subnet_id      = lookup(local.subnet_name_to_id, "rocket-bank-use-1a-app")
+      private_ip     = "192.168.30.42"
       public_ipv4    = false
       ipv6_count     = 1
       security_group = [lookup(local.sg_name_to_id, "app-sg")]
@@ -147,6 +152,7 @@ module "instance" {
       type           = "t2.micro"
       name           = "rb-app-use-1b"
       subnet_id      = lookup(local.subnet_name_to_id, "rocket-bank-use-1b-app")
+      private_ip     = "192.168.30.85"
       public_ipv4    = false
       ipv6_count     = 1
       security_group = [lookup(local.sg_name_to_id, "app-sg")]
@@ -159,6 +165,7 @@ module "instance" {
       type           = "t2.micro"
       name           = "rb-app-use-1c"
       subnet_id      = lookup(local.subnet_name_to_id, "rocket-bank-use-1c-app")
+      private_ip     = "192.168.30.138"
       public_ipv4    = false
       ipv6_count     = 1
       security_group = [lookup(local.sg_name_to_id, "app-sg")]
@@ -172,6 +179,7 @@ module "instance" {
       type           = "t2.micro"
       name           = "rb-db-use-1a"
       subnet_id      = lookup(local.subnet_name_to_id, "rocket-bank-use-1a-db")
+      private_ip     = "192.168.30.55"
       public_ipv4    = false
       ipv6_count     = 1
       security_group = [lookup(local.sg_name_to_id, "db-sg")]
@@ -184,6 +192,7 @@ module "instance" {
       type           = "t2.micro"
       name           = "rb-db-use-1b"
       subnet_id      = lookup(local.subnet_name_to_id, "rocket-bank-use-1b-db")
+      private_ip     = "192.168.30.103"
       public_ipv4    = false
       ipv6_count     = 1
       security_group = [lookup(local.sg_name_to_id, "db-sg")]
@@ -196,6 +205,7 @@ module "instance" {
       type           = "t2.micro"
       name           = "rb-db-use-1c"
       subnet_id      = lookup(local.subnet_name_to_id, "rocket-bank-use-1c-db")
+      private_ip     = "192.168.30.148"
       public_ipv4    = false
       ipv6_count     = 1
       security_group = [lookup(local.sg_name_to_id, "db-sg")]
@@ -207,8 +217,8 @@ module "instance" {
 }
 
 module "elb" {
-  depends_on = [ module.instance ]
-  source = "./modules/loadbalancer"
+  depends_on = [module.instance]
+  source     = "./modules/loadbalancer"
 
   tg = [
     {
