@@ -24,7 +24,7 @@ Rocket Bank Application URLs:
 
 ## Diagram
 
-![AWS Diagram](https://github.com/TevinDeale/rocketbank-AWS-3-tier-architecture-terraform/blob/readme/.github/assets/rocketbank-aws-diagram-v1.png)
+![AWS Diagram](https://github.com/TevinDeale/rocketbank-AWS-3-tier-architecture-terraform/blob/main/.github/assets/rocketbank-aws-diagram-v1.png)
 
 ## Contributing
 
