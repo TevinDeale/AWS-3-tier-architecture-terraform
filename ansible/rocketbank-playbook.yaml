@@ -43,7 +43,7 @@
       lineinfile:
         path: /etc/postgresql/16/main/postgresql.conf
         regexp: '^#?(listen_addresses = )(.*)$'
-        line: 'listen_addresses = "*"'
+        line: "listen_addresses = '*'"
         backup: true
       register: change_listen_address
       notify: Restart PostgreSQL
@@ -53,7 +53,6 @@
       service:
         name: postgresql
         state: restarted
-    
 
 - name: Configure Master DB
   hosts: rb-db-use-1a
@@ -122,11 +121,15 @@
     pg_replication_password: "{{ pg_replication_password }}"
 
   tasks:
+    - name: Check if exist file exists
+      stat:
+        path: /var/lib/pgsql/exist.txt
+      register: exist_check
+
     - name: Create a random file to check
       shell: |
         echo "I exist" >> /home/ubuntu/exist.txt
-      args:
-        creates: /home/ubuntu/exist.txt
+      when: not exist_check.stat.exists
       register: exist
 
     - name: Stop Postgres Service
@@ -161,19 +164,20 @@
         cmd: systemctl start postgresql
 
     - name: Change listening address to all
-      become: true
       become_user: postgres
-      community.postgresql.postgresql_set:
-        port: 5432
-        name: listen_addresses
-        value: "*"
-      register: change_listen_address_node_1
+      lineinfile:
+        path: /etc/postgresql/16/main/postgresql.conf
+        regexp: '^#?(listen_addresses = )(.*)$'
+        line: "listen_addresses = '*'"
+        backup: true
+      register: change_listen_address
+      notify: Restart PostgreSQL
 
-    - name: Restart Database Service
-      become: true
-      ansible.builtin.command:
-        cmd: systemctl restart postgresql
-      when: change_listen_address_node_1.changed
+  handlers:
+    - name: Restart PostgreSQL
+      service:
+        name: postgresql
+        state: restarted
 
 - name: Configure Replication Node 2
   hosts: rb-db-use-1c
@@ -184,11 +188,15 @@
     pg_replication_password: "{{ pg_replication_password }}"
 
   tasks:
+    - name: Check if exist file exists
+      stat:
+        path: /var/lib/pgsql/exist.txt
+      register: exist_check
+
     - name: Create a random file to check
       shell: |
         echo "I exist" >> /home/ubuntu/exist.txt
-      args:
-        creates: /var/lib/pgsql/exist.txt
+      when: not exist_check.stat.exists
       register: exist
 
     - name: Stop Postgres Service
@@ -223,15 +231,17 @@
         cmd: systemctl start postgresql
 
     - name: Change listening address to all
-      become: true
       become_user: postgres
-      community.postgresql.postgresql_set:
-        name: listen_addresses
-        value: "*"
-      register: change_listen_address_node_2
+      lineinfile:
+        path: /etc/postgresql/16/main/postgresql.conf
+        regexp: '^#?(listen_addresses = )(.*)$'
+        line: "listen_addresses = '*'"
+        backup: true
+      register: change_listen_address
+      notify: Restart PostgreSQL
 
-    - name: Restart Database Service
-      become: true
-      ansible.builtin.command:
-        cmd: systemctl restart postgresql
-      when: change_listen_address_node_2.changed
+  handlers:
+    - name: Restart PostgreSQL
+      service:
+        name: postgresql
+        state: restarted
