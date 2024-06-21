@@ -123,7 +123,7 @@
   tasks:
     - name: Check if exist file exists
       stat:
-        path: /var/lib/pgsql/exist.txt
+        path: /home/ubuntu/exist.txt
       register: exist_check
 
     - name: Create a random file to check
@@ -164,6 +164,7 @@
         cmd: systemctl start postgresql
 
     - name: Change listening address to all
+      become: true
       become_user: postgres
       lineinfile:
         path: /etc/postgresql/16/main/postgresql.conf
@@ -190,7 +191,7 @@
   tasks:
     - name: Check if exist file exists
       stat:
-        path: /var/lib/pgsql/exist.txt
+        path: /home/ubuntu/exist.txt
       register: exist_check
 
     - name: Create a random file to check
@@ -231,6 +232,7 @@
         cmd: systemctl start postgresql
 
     - name: Change listening address to all
+      become: true
       become_user: postgres
       lineinfile:
         path: /etc/postgresql/16/main/postgresql.conf
