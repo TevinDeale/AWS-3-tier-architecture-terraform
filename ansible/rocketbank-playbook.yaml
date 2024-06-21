@@ -255,7 +255,7 @@
   tasks:
     - name: Ensure that pgpool is started and enabled at boot
       ansible.builtin.service:
-        name: pgpool
+        name: pgpool2
         state: started
         enabled: true
 
