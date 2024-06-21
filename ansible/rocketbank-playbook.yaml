@@ -266,4 +266,10 @@
         group: users
         shell: /bin/bash
         state: present
+  handlers:
+    - name: Restart pgpool2
+      become: true
+      service:
+        name: pgpool2
+        state: restarted
         
