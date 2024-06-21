@@ -112,7 +112,7 @@
         cmd: systemctl restart postgresql
       when: add_repuser_pg_hba.changed
 
-- name: Configure Replication Node 1
+- name: Configure Replication Node 1 from Backup from Master
   hosts: rb-db-use-1b
   vars_files:
     - rocketbank-vault.yaml
@@ -152,7 +152,7 @@
           --checkpoint=fast \
           -D /var/lib/postgresql/16/main \
           -d "dbname=rocketbank" \
-          -R --slot=node_1 \
+          -R --slot=rep_node_0 \
           -C
       environment: 
         PGPASSWORD: "{{ pg_replication_password }}"
@@ -176,11 +176,12 @@
 
   handlers:
     - name: Restart PostgreSQL
+      become: true
       service:
         name: postgresql
         state: restarted
 
-- name: Configure Replication Node 2
+- name: Configure Replication Node 2 from Backup from Master
   hosts: rb-db-use-1c
   vars_files:
     - rocketbank-vault.yaml
@@ -208,8 +209,6 @@
     - name: Remove existing data
       ansible.builtin.command:
         cmd: sudo rm -rf /var/lib/postgresql/16/main
-      args:
-        creates: /var/lib/postgresql/16/main
       when: exist.changed
 
     - name: Pull back from Master Node using pg_basebackup
@@ -220,7 +219,7 @@
           --checkpoint=fast \
           -D /var/lib/postgresql/16/main \
           -d "dbname=rocketbank" \
-          -R --slot=node_2 \
+          -R --slot=rep_node_1 \
           -C
       environment: 
         PGPASSWORD: "{{ pg_replication_password }}"
@@ -244,6 +243,27 @@
 
   handlers:
     - name: Restart PostgreSQL
+      become: true
       service:
         name: postgresql
         state: restarted
+
+- name: Configure pgpool-II
+  become: true
+  hosts: databases
+
+  tasks:
+    - name: Ensure that pgpool is started and enabled at boot
+      ansible.builtin.service:
+        name: pgpool
+        state: started
+        enabled: true
+
+    - name: Create pgpool Unix User
+      user:
+        name: pgpool
+        comment: "pgpool"
+        group: users
+        shell: /bin/bash
+        state: present
+        
